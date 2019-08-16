@@ -1,0 +1,22 @@
+{
+  "name": "projetointegrador",
+  "version": "1.0.0",
+  "description": "Repositorio Para a disciplina BCC35C",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucasHenriqueP/ProjetoIntegrador.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LucasHenriqueP/ProjetoIntegrador/issues"
+  },
+  "homepage": "https://github.com/LucasHenriqueP/ProjetoIntegrador#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
