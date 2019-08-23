@@ -18,5 +18,8 @@
   "homepage": "https://github.com/LucasHenriqueP/ProjetoIntegrador#readme",
   "dependencies": {
     "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2"
   }
 }
