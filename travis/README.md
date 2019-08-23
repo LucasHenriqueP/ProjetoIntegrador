@@ -59,4 +59,35 @@ Usando apenas estas configurações Travis irá clonar o repositório, executar 
 
 Este script não realiza nenhum teste específico, mas retorna 0, com o travis qualquer retorno 0 é considerado sucesso, mas também é possível adicionar nossos próprios testes com outros frameworks como mocha, e gulp.
 
-Iremos criar um pequeno teste com Gulp, e configurar o travis para executar os testes criado por nós, tal sessão será adicionada logo mais em nosso tutorial.
+Iremos criar uma automação de workflow com o [gulp.js](https://gulpjs.com/), e configurar o travis para executar os testes criado por nós, primeiramente precisamos [instalar](https://gulpjs.com/docs/en/getting-started/quick-start) o gulp.js utilizando o ```npm isntall --global gulp-cli``` dentro do seu projeto node.js, logo após isso é necessário ter um arquivo _gulpfile.js_ igual o mostrado abaixo
+    
+    function defaultTask(cb) {
+        // place code for your default task here
+        cb();
+    }
+
+    exports.default = defaultTask
+
+Após isso iremos rodar o teste no terminal utilizando o comando ```gulp``` (Atenção, essa etapa é apenas para teste, já que no Travis é diferente)
+
+Agora no ```.travis.yml``` é necessário adicionar dois novos componentes, o _before\_script_ e o _script_, como mostrado no exemplo abaixo:
+
+    before_script:
+        - npm install gulp-cli -g
+    script: gulp ola
+
+Essa alteração irá instalar o gulp toda vez no travis e executar o script "ola". Veja o nosso exemplo abaixo de uma task default e uma task chamada ola, note que no ```.travis.yml``` apenas a task "ola" é chamada, caso você não passe nenhuma task específica o gulp irá chamar a exportada por default.
+
+    const gulp = require("gulp")
+
+    function defaultTask(cb) {
+        console.log("Função Default!")
+        cb();
+    }
+
+    gulp.task('ola', function (cb) {
+        console.log("Funcionou")
+        cb();
+    })
+
+    exports.default = defaultTask
