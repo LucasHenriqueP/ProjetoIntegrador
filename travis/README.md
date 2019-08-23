@@ -59,10 +59,6 @@ Usando apenas estas configurações Travis irá clonar o repositório, executar 
 
 Este script não realiza nenhum teste específico, mas retorna 0, com o travis qualquer retorno 0 é considerado sucesso, mas também é possível adicionar nossos próprios testes com outros frameworks como mocha, e gulp.
 
-Uma nuance interessante do Travis é o sistema de badges, que irá por exemplo indicar o estado da sua build dentro do arquivo README do seu projeto, fazer isso é extremamente fácil, apenas acesse o seu repositório no Travis, clique na badge do lado do nome do projeto (estará escrito build nela) e selecione o FORMAT markdown, após isso é só copiar e colar no seu texto readme, como visto na badge a seguir [![Build Status](https://travis-ci.org/LucasHenriqueP/ProjetoIntegrador.svg?branch=master)](https://travis-ci.org/LucasHenriqueP/ProjetoIntegrador)
-
-# Automação de Workflow com o Gulp
-
 Iremos criar uma automação de workflow com o [gulp.js](https://gulpjs.com/), e configurar o travis para executar os testes criado por nós, primeiramente precisamos [instalar](https://gulpjs.com/docs/en/getting-started/quick-start) o gulp.js utilizando o ```npm isntall --global gulp-cli``` dentro do seu projeto node.js, logo após isso é necessário ter um arquivo _gulpfile.js_ igual o mostrado abaixo
     
     function defaultTask(cb) {
@@ -95,3 +91,10 @@ Essa alteração irá instalar o gulp toda vez no travis e executar o script "ol
     })
 
     exports.default = defaultTask
+    
+Com Travis também é possível definir uma lista de emails que receberão email quando uma build falhar, ou quando uma build passar.
+Para fazer isso basta definir no arquivo .travis.yml a seguinte instrução
+
+    notifications:
+       email:
+        - seuemail@email.com
