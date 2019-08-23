@@ -47,7 +47,7 @@ Uma build é considerada _broken_(quebrada) quando um ou mais jobs não passarem
 
 A primeira coisa que precisamos definir no arquivo de configuração é a linguagem que será utilizada no projeto, como no exemplo abaixo.
 
-language: node_js
+    language: node_js
 
 Neste exemplo estamos utilizando o node.js como linguagem, [aqui](https://docs.travis-ci.com/user/languages/) temos uma lista completa de linguagens disponíveis para se usar com o Travis.
 
