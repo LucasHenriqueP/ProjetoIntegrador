@@ -1,6 +1,6 @@
 const gulp = require("gulp")
 
-gulp.task('ola', function(){
+gulp.task('ola', function(cb){
     console.log("Funcionou")
-    return 0;
+    cb();
 })
