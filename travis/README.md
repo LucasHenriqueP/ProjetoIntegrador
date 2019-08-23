@@ -59,6 +59,8 @@ Usando apenas estas configurações Travis irá clonar o repositório, executar 
 
 Este script não realiza nenhum teste específico, mas retorna 0, com o travis qualquer retorno 0 é considerado sucesso, mas também é possível adicionar nossos próprios testes com outros frameworks como mocha, e gulp.
 
+**Badges**
+
 Uma nuance interessante do Travis é o sistema de badges, que irá por exemplo indicar o estado da sua build dentro do arquivo README do seu projeto, fazer isso é extremamente fácil, apenas acesse o seu repositório no Travis, clique na badge do lado do nome do projeto (estará escrito build nela) e selecione o FORMAT markdown, após isso é só copiar e colar no seu texto readme, como visto na badge a seguir [![Build Status](https://travis-ci.org/LucasHenriqueP/ProjetoIntegrador.svg?branch=master)](https://travis-ci.org/LucasHenriqueP/ProjetoIntegrador)
 
 # Automação de Workflow com o Gulp
