@@ -54,7 +54,7 @@ Neste exemplo estamos utilizando o node.js como linguagem, [aqui](https://docs.t
 Usando apenas estas configurações Travis irá clonar o repositório, executar o comando npm install, e depois npm test. Com isto será executado o script de teste definido no package.json de seu projeto. em neste tutorial o script é o seguinte:
 
     "scripts": {
-    "test": "echo \"Script de teste\" && exit 0"
+        "test": "echo \"Script de teste\" && exit 0"
     }
 
 Este script não realiza nenhum teste específico, mas retorna 0, com o travis qualquer retorno 0 é considerado sucesso, mas também é possível adicionar nossos próprios testes com outros frameworks como mocha, e gulp.
