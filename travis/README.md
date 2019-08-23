@@ -97,3 +97,10 @@ Essa alteração irá instalar o gulp toda vez no travis e executar o script "ol
     })
 
     exports.default = defaultTask
+    
+Com Travis também é possível definir uma lista de emails que receberão email quando uma build falhar, ou quando uma build passar.
+Para fazer isso basta definir no arquivo .travis.yml a seguinte instrução
+
+    notifications:
+       email:
+        - seuemail@email.com
