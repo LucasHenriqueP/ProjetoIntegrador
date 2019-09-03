@@ -8,12 +8,12 @@ Um breve tutorial sobre o Travis CI pode ser encontrado dentro da pasta _travis_
 
 
 # To-do
-1. Reescrever requisitos/funcionalidades em forma de história de usuario.
-2. Terminar os requisitos.
-3. Procurar ferramentas/frameworks de teste react-native/typescript/javascript.
-4. Montar ambiente com ferramentas de teste.
-5. Mudar de javascript para typescript? (para maior facildiade?)
-6. Transformar histórias de usuário em cartões do Trello/ZenHub
+1. Terminar os requisitos.
+2. Reescrever requisitos/funcionalidades em forma de história de usuario.
+3. Transformar histórias de usuário em cartões do Trello/ZenHub
+4. Procurar ferramentas/frameworks de teste react-native/typescript/javascript.
+5. Montar ambiente com ferramentas de teste.
+6. Mudar de javascript para typescript? (para maior facildiade?)
 
 
 # Requisitos
