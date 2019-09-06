@@ -52,7 +52,7 @@ Descrição: O Software deverá possibilitar que pessoas, anunciem e procurem cu
 9. O sistema deverá permitir que um usuário administrador possa excluir usuários do sistema.
 10. O Sistema deverá permitir que um usuário administrador possa excluir cursos do sistema.
 
-#História de usuário
+# História de usuário
 
 
 
