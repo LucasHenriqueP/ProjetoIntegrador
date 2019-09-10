@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/LucasHenriqueP/ProjetoIntegrador.svg?branch=master)](https://travis-ci.org/LucasHenriqueP/ProjetoIntegrador)
+
 # Projeto Integrador
+
 Repositorio Para a disciplina BCC35C
 
 # Tutorial Travis CI
@@ -8,22 +10,17 @@ Um breve tutorial sobre o Travis CI pode ser encontrado dentro da pasta _travis_
 
 
 # To-do
-1. Terminar os requisitos.
-2. Reescrever requisitos/funcionalidades em forma de história de usuario.
-3. Transformar histórias de usuário em cartões do Trello/ZenHub
-4. Procurar ferramentas/frameworks de teste react-native/typescript/javascript.
-5. Montar ambiente com ferramentas de teste.
-6. Mudar de javascript para typescript? (para maior facildiade?)
+
+1. Procurar ferramentas/frameworks de teste react-native/typescript/javascript.
+2. Montar ambiente com ferramentas de teste.
 
 
 # Requisitos
-
 
 Descrição: O Software deverá possibilitar que pessoas, anunciem e procurem cursos/aulas. Os usuários poderão procuram cursos de acordo com critérios específicos, como preço, faixa de preço, distância, descrição, professor, e também poderá filtrar por cursos específicos como por exemplo “Aulas de Violão”.
 
 
 **Funcionalidades**
-
 
 1. O Sistema deverá permite que novos usuários se cadastrem utilizando uma conta do Facebook, Google, ou informando
     *   Nome
@@ -54,10 +51,8 @@ Descrição: O Software deverá possibilitar que pessoas, anunciem e procurem cu
 
 # História de usuário
 
-
-
 1. Eu como professor quero me cadastrar no sistema para poder usar as funcionalidades do sistema.
-2. Eu como aluno quero me cadastrar no sistema para poder usar as funcionalidades do sistema
+2. Eu como aluno quero me cadastrar no sistema para poder usar as funcionalidades do sistema.
 3. Eu como aluno quero ver meus cursos favoritos, para não perder um curso que gostei.
 4. Eu como aluno quero avaliar meus cursos comprados, para dar meu feedback ao curso.
 5. Eu como aluno quero buscar cursos perto de mim, para não me deslocar muito.
@@ -66,5 +61,5 @@ Descrição: O Software deverá possibilitar que pessoas, anunciem e procurem cu
 8. Eu como professor quero anunciar meus cursos, para poder vender meus cursos na plataforma.
 9. Eu como professor quero falar com meus alunos, para poder mandar mensagens e avisos para todos meus alunos, ou alunos de um determinado curso.
 10. Eu como professor quero falar com alunos individualmente, para poder ajudar individualmente meu alunos.
-11. Eu como usuário administrador quero excluir um usuário pois ele infringiu alguma regra do sistema
-12. Eu como usuário administrador quero excluir un curso pois ele infringiu alguma regra do sistema
+11. Eu como usuário administrador quero excluir um usuário pois ele infringiu alguma regra do sistema.
+12. Eu como usuário administrador quero excluir um curso pois ele infringiu alguma regra do sistema.
