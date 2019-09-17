@@ -3,7 +3,7 @@ node_js:
   - 12.10.0
 
 before_script:
-  - npm install gulp-cli -g
+  - yarn global add gulp-cli
 script: gulp ola
 
 
