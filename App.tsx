@@ -1,14 +1,4 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/emin93/react-native-template-typescript
- *
- * @format
- */
-
-import React, {Fragment} from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -16,8 +6,8 @@ import {
   View,
   Text,
   StatusBar,
+  FlatList
 } from 'react-native';
-
 import {
   Header,
   LearnMoreLinks,
@@ -25,48 +15,25 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import { Appbar, TextInput, Button } from 'react-native-paper';
+import Cursos from './src/pages/Cursos'
+
+
 
 const App = () => {
   return (
     <Fragment>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
       <SafeAreaView>
         <ScrollView
           contentInsetAdjustmentBehavior="automatic"
           style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
           <View style={styles.body}>
             <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
+              {/* listar cursos */}
             </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
+           
+            <Button onPress={() => { }}>Add Curso</Button>
           </View>
         </ScrollView>
       </SafeAreaView>
