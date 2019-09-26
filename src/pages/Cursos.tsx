@@ -1,7 +1,8 @@
 import firestore from '@react-native-firebase/firestore';
 import React, { useState, useEffect } from 'react';
 import { Button, TextInput } from 'react-native-paper';
-import { ScrollView, Text, FlatList, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { ScrollView, Text, FlatList, View, TouchableOpacity, StyleSheet, TouchableNativeFeedback, Alert } from 'react-native';
+import { objectExpression } from '@babel/types';
 
 const logaCursos = async () => {
   const querySnapshot = await firestore()
@@ -11,19 +12,49 @@ const logaCursos = async () => {
   console.log('Documentos de Cursos', querySnapshot.docs);
 }
 
+function editaCurso(item){
+
+}
+
+function removeCurso(item) {
+  Alert.alert(
+    'Remover Curso',
+    "Nome: " + item.nome + "\n" + "ID: " + item.id +
+    "\n" + "Descrição: " + item.descricao + "\n" + "Rating: " + item.rating,
+    [
+      {
+        text: 'Cancelar',
+        style: 'cancel',
+      },
+      { text: 'Remover', onPress: () => firestore().collection('cursos').doc(item.id).delete() },
+    ],
+    { cancelable: true },
+  )
+}
+
 const renderItem = ({ item }) => (
+
   <View style={styles.cursoContainer}>
-    <Text style={styles.cursoId}>Nome: {item.nome}</Text>
+    <View style={styles.row}>
+      <Text style={styles.cursoId}>Nome: {item.nome}</Text>
+      <TouchableOpacity onPress={() => editaCurso(item)}>
+        <Text style={styles.editarButtonText}>Editar {" "}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => removeCurso(item)}>
+        <Text style={styles.removerButtonText}>Remover</Text>
+      </TouchableOpacity>
+    </View>
+
     <Text>
-      Id:
+      Id:{" "}
     <Text style={styles.curso}>{item.id}</Text>
     </Text>
     <Text>
-      Descrição:
+      Descrição:{" "}
     <Text style={styles.curso}>{item.descricao}</Text>
     </Text>
     <Text>
-      Rating:
+      Rating:{" "}
     <Text style={styles.curso}>{item.rating}
       </Text>
       {/* {"\n"} */}
@@ -58,7 +89,6 @@ function cursos() {
       setRating('');
     }
   }
-
 
   useEffect(() => {
     return ref.onSnapshot(querySnapshot => {
@@ -122,6 +152,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   cursoId: {
+    flex: 1,
     fontSize: 18,
     fontWeight: "bold",
     color: "#333"
@@ -146,6 +177,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#202a31",
     fontWeight: "bold",
+  },
+  removerButtonText: {
+    fontSize: 16,
+    color: "#ff0000",
+  },
+  editarButtonText: {
+    fontSize: 16,
+    color: "#202a31",
+  },
+  row: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start"
   },
 });
 
