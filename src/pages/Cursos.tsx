@@ -1,8 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
 import React, { useState, useEffect } from 'react';
-import { Button, TextInput, Appbar } from 'react-native-paper';
-import { ScrollView, Text, FlatList } from 'react-native';
-import Show from './Curso';
+import { Button, TextInput } from 'react-native-paper';
+import { ScrollView, Text, FlatList, View, TouchableOpacity, StyleSheet } from 'react-native';
 
 const logaCursos = async () => {
   const querySnapshot = await firestore()
@@ -12,7 +11,31 @@ const logaCursos = async () => {
   console.log('Documentos de Cursos', querySnapshot.docs);
 }
 
-
+const renderItem = ({ item }) => (
+  <View style={styles.cursoContainer}>
+    <Text style={styles.cursoId}>Nome: {item.nome}</Text>
+    <Text>
+      Id:
+    <Text style={styles.curso}>{item.id}</Text>
+    </Text>
+    <Text>
+      Descrição:
+    <Text style={styles.curso}>{item.descricao}</Text>
+    </Text>
+    <Text>
+      Rating:
+    <Text style={styles.curso}>{item.rating}
+      </Text>
+      {/* {"\n"} */}
+    </Text>
+    <TouchableOpacity style={styles.criadorButton}>
+      <Text style={styles.criadorButtonText}>Criador</Text>
+    </TouchableOpacity>
+    {/* <Text>
+{"\n"}
+    </Text> */}
+  </View>
+)
 
 function cursos() {
   const ref = firestore().collection('cursos');
@@ -24,15 +47,18 @@ function cursos() {
 
 
   async function addCurso() {
-    await ref.add({
-      nome: Curso,
-      descricao: Desc,
-      rating: Rating
-    });
-    setCurso('');
-    setDesc(''); 
-    setRating('');
+    if (Curso != '' && Desc != '') {
+      await ref.add({
+        nome: Curso,
+        descricao: Desc,
+        rating: Rating ? Rating : 0
+      });
+      setCurso('');
+      setDesc('');
+      setRating('');
+    }
   }
+
 
   useEffect(() => {
     return ref.onSnapshot(querySnapshot => {
@@ -45,7 +71,7 @@ function cursos() {
           descricao,
           rating
         });
-        console.log(doc.data())
+        // console.log(doc.data())
       });
       setCursos(list);
       if (loading) {
@@ -57,25 +83,70 @@ function cursos() {
   if (loading) {
     return null; // or a spinner
   }
+
   return (
     <>
-     <Appbar>
-        <Appbar.Content title={'Lista de Cursos'} />
-      </Appbar>
       <ScrollView style={{ flex: 1 }}>
-      <FlatList 
-        style={{flex: 1}}
-        data={Cursos}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Show {...item} />}
-      />
+        <View style={styles.container}>
+          <FlatList
+            contentContainerStyle={styles.list}
+            style={{ flex: 1 }}
+            data={Cursos}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+          />
+        </View>
       </ScrollView>
       <TextInput label={'Nome'} value={Curso} onChangeText={setCurso} />
       <TextInput label={'Descrição'} value={Desc} onChangeText={setDesc} />
       <TextInput label={'Rating'} value={Rating} onChangeText={setRating} />
-      <Button onPress={() => addCurso()}>Add Curso</Button>
+      <Button color="#202a31" onPress={() => addCurso()}>Adicionar Curso</Button>
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#FAFAFA"
+  },
+  list: {
+    padding: 10
+  },
+  cursoContainer: {
+    backgroundColor: "#FFF",
+    borderWidth: 1,
+    borderColor: "#DDD",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
+  cursoId: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333"
+  },
+  curso: {
+    fontSize: 16,
+    color: "#999",
+    marginTop: 5,
+    lineHeight: 24
+  },
+  criadorButton: {
+    height: 42,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: "#202a31",
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10
+  },
+  criadorButtonText: {
+    fontSize: 16,
+    color: "#202a31",
+    fontWeight: "bold",
+  },
+});
 
 export default cursos;
