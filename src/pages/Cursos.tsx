@@ -12,7 +12,7 @@ const logaCursos = async () => {
   console.log('Documentos de Cursos', querySnapshot.docs);
 }
 
-function editaCurso(item){
+function editaCurso(item) {
 
 }
 
@@ -47,15 +47,15 @@ const renderItem = ({ item }) => (
 
     <Text>
       Id:{" "}
-    <Text style={styles.curso}>{item.id}</Text>
+      <Text style={styles.curso}>{item.id}</Text>
     </Text>
     <Text>
       Descrição:{" "}
-    <Text style={styles.curso}>{item.descricao}</Text>
+      <Text style={styles.curso}>{item.descricao}</Text>
     </Text>
     <Text>
       Rating:{" "}
-    <Text style={styles.curso}>{item.rating}
+      <Text style={styles.curso}>{item.rating}
       </Text>
       {/* {"\n"} */}
     </Text>
@@ -116,17 +116,15 @@ function cursos() {
 
   return (
     <>
-      <ScrollView style={{ flex: 1 }}>
-        <View style={styles.container}>
-          <FlatList
-            contentContainerStyle={styles.list}
-            style={{ flex: 1 }}
-            data={Cursos}
-            keyExtractor={(item) => item.id}
-            renderItem={renderItem}
-          />
-        </View>
-      </ScrollView>
+      <View style={styles.container}>
+        <FlatList
+          contentContainerStyle={styles.list}
+          style={{ flex: 1 }}
+          data={Cursos}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+        />
+      </View>
       <TextInput label={'Nome'} value={Curso} onChangeText={setCurso} />
       <TextInput label={'Descrição'} value={Desc} onChangeText={setDesc} />
       <TextInput label={'Rating'} value={Rating} onChangeText={setRating} />
