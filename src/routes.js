@@ -25,11 +25,7 @@ const AppNavigator = createStackNavigator({
         }),
     },
     Cursos: {
-        // `MainScreen` is a React component that will be the main content of the screen.
         screen: cursos,
-        // When `MainScreen` is loaded by the StackNavigator, it will be given a `navigation` prop.
-
-        // Optional: Override the `navigationOptions` for the screen
         navigationOptions: ({ navigation }) => ({
             title: "Lista de Cursos(Admin)",
             headerStyle: {

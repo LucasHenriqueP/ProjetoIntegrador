@@ -1,18 +1,18 @@
 import firestore from '@react-native-firebase/firestore';
 import React, { useState, useEffect } from 'react';
 import { Button, TextInput } from 'react-native-paper';
-import { ScrollView, Text, FlatList, View, TouchableOpacity, StyleSheet, TouchableNativeFeedback, Alert } from 'react-native';
-import { objectExpression } from '@babel/types';
+import { Text, FlatList, View, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+
+const ref = firestore().collection('cursos');
 
 const logaCursos = async () => {
-  const querySnapshot = await firestore()
-    .collection('cursos')
-    .get();
+  const querySnapshot = await ref.get();
   console.log('Cursos Totais', querySnapshot.size);
   console.log('Documentos de Cursos', querySnapshot.docs);
 }
 
 function editaCurso(item) {
+
 
 }
 
@@ -26,7 +26,7 @@ function removeCurso(item) {
         text: 'Cancelar',
         style: 'cancel',
       },
-      { text: 'Remover', onPress: () => firestore().collection('cursos').doc(item.id).delete() },
+      { text: 'Remover', onPress: () => ref.doc(item.id).delete() },
     ],
     { cancelable: true },
   )
@@ -68,8 +68,7 @@ const renderItem = ({ item }) => (
   </View>
 )
 
-function cursos() {
-  const ref = firestore().collection('cursos');
+const cursos = () => {
   const [Curso, setCurso] = useState('');
   const [Desc, setDesc] = useState('');
   const [Rating, setRating] = useState('');
@@ -111,7 +110,8 @@ function cursos() {
   }, []);
 
   if (loading) {
-    return null; // or a spinner
+    return <ActivityIndicator style={styles.load} animating={true} size={"large"} color={"#000"} />
+
   }
 
   return (
@@ -189,6 +189,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start"
+  },
+  load: {
+    flex: 1,
+    alignContent: "center",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
