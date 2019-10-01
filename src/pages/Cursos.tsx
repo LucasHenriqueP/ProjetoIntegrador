@@ -2,7 +2,7 @@ import firestore from '@react-native-firebase/firestore';
 import React, { useState, useEffect } from 'react';
 import { Button, TextInput } from 'react-native-paper';
 import { Text, FlatList, View, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { Overlay, Input } from 'react-native-elements';
+import { Overlay, Input, Rating } from 'react-native-elements';
 
 const ref = firestore().collection('cursos');
 
@@ -54,12 +54,11 @@ const renderItem = ({ item }) => (
       Descrição:{" "}
       <Text style={styles.curso}>{item.descricao}</Text>
     </Text>
-    <Text>
-      Rating:{" "}
-      <Text style={styles.curso}>{item.rating}
-      </Text>
-      {/* {"\n"} */}
-    </Text>
+    <Rating
+  imageSize={20}
+  readonly
+  startingValue={item.rating}
+/>
     <TouchableOpacity style={styles.criadorButton}>
       <Text style={styles.criadorButtonText}>Criador</Text>
     </TouchableOpacity>
