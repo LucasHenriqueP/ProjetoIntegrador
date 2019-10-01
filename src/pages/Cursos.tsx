@@ -182,7 +182,6 @@ const styles = StyleSheet.create({
   },
   criadorButton: {
     height: 42,
-    borderRadius: 5,
     borderWidth: 2,
     borderColor: "#202a31",
     backgroundColor: "transparent",
@@ -217,7 +216,6 @@ const styles = StyleSheet.create({
   },
   criar:{
     backgroundColor: "#f4f4f4",
-    borderTopColor: "black",
     borderWidth: 2,
   },
   textInputStyle:{

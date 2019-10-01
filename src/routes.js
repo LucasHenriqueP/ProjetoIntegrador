@@ -2,7 +2,8 @@ import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
 import Main from './pages/Main'
-import cursos from './pages/Cursos'
+import Cursos from './pages/Cursos'
+import Users from './pages/Users'
 
 const AppNavigator = createStackNavigator({
     // For each screen that you can navigate to, create a new entry like this:
@@ -25,9 +26,23 @@ const AppNavigator = createStackNavigator({
         }),
     },
     Cursos: {
-        screen: cursos,
+        screen: Cursos,
         navigationOptions: ({ navigation }) => ({
             title: "Lista de Cursos(Admin)",
+            headerStyle: {
+                backgroundColor: "#000000"
+            },
+            headerTintColor: "#FFF",
+            headerTitleStyle: {
+                fontSize: 18,
+                fontWeight: "bold",
+            }
+        }),
+    },
+    Users: {
+        screen: Users,
+        navigationOptions: ({ navigation }) => ({
+            title: "Lista de Usuários(Admin)",
             headerStyle: {
                 backgroundColor: "#000000"
             },
