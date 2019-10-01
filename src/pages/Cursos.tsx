@@ -2,6 +2,7 @@ import firestore from '@react-native-firebase/firestore';
 import React, { useState, useEffect } from 'react';
 import { Button, TextInput } from 'react-native-paper';
 import { Text, FlatList, View, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { Overlay, Input } from 'react-native-elements';
 
 const ref = firestore().collection('cursos');
 
@@ -74,6 +75,7 @@ const cursos = () => {
   const [Rating, setRating] = useState('');
   const [loading, setLoading] = useState(true); // Set loading to true on component mount 
   const [Cursos, setCursos] = useState([]); // Initial empty array of Cursos
+  const [modalAdicionar, setModalAdicionar] = useState(false);
 
 
   async function addCurso() {
@@ -111,7 +113,13 @@ const cursos = () => {
 
   if (loading) {
     return <ActivityIndicator style={styles.load} animating={true} size={"large"} color={"#000"} />
+  }
 
+  const openModalAdicionar = ()=>{
+    setModalAdicionar(true);
+  }
+  const closeModalAdicionar = ()=>{
+    setModalAdicionar(false);
   }
 
   return (
@@ -124,11 +132,23 @@ const cursos = () => {
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
         />
+        <Button onPress={openModalAdicionar} style={styles.criar} >Criar um curso</Button>
+      <Overlay
+        isVisible={modalAdicionar}
+        windowBackgroundColor="rgba(255, 255, 255, .5)"
+        overlayBackgroundColor="#a57f60"
+        width="100%"
+        onBackdropPress={closeModalAdicionar}
+        height="auto"
+      >
+      <>
+        <Input label={'Nome'} value={Curso} onChangeText={setCurso} />
+        <Input label={'Descrição'} value={Desc} onChangeText={setDesc} />
+        <Input label={'Rating'} value={Rating} onChangeText={setRating} />
+        <Button style={{backgroundColor:"#e3a587"}} color="#202a31" onPress={() => addCurso()}>Adicionar Curso</Button>
+        </>
+      </Overlay>
       </View>
-      <TextInput label={'Nome'} value={Curso} onChangeText={setCurso} />
-      <TextInput label={'Descrição'} value={Desc} onChangeText={setDesc} />
-      <TextInput label={'Rating'} value={Rating} onChangeText={setRating} />
-      <Button color="#202a31" onPress={() => addCurso()}>Adicionar Curso</Button>
     </>
   );
 }
@@ -196,6 +216,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  criar:{
+    backgroundColor: "#f4f4f4",
+    borderTopColor: "black",
+    borderWidth: 2,
+  },
+  textInputStyle:{
+
+  }
 });
 
 export default cursos;
