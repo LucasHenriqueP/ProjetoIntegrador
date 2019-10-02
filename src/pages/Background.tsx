@@ -1,18 +1,12 @@
 import React, { Component } from 'react';
-import {
-    StyleSheet,
-    Text,
-    Image,
-    View,
-    ImageBackground
-} from 'react-native';
+import { StyleSheet, ImageBackground } from 'react-native';
 
-class BackgroundImage extends Component {
+export default class BackgroundImage extends Component {
 
     render() {
         return (
             <ImageBackground
-                blurRadius={1.2} source={require('../../static/background.jpeg')}
+                blurRadius={1} source={require('../../static/background.jpg')}
                 style={styles.backgroundImage}>
 
                 {this.props.children}
@@ -37,5 +31,3 @@ const styles = StyleSheet.create({
         fontSize: 32
     }
 });
-
-export default BackgroundImage;

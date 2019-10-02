@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from 'react-native-paper';
 import { Text, FlatList, View, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Overlay, Input } from 'react-native-elements';
+import Loading from './Loading';
 
 const ref = firestore().collection('usuarios');
 
@@ -116,7 +117,7 @@ const Users = () => {
   }, []);
 
   if (loading) {
-    return <ActivityIndicator style={styles.load} animating={true} size={"large"} color={"#000"} />
+    return <Loading />
   }
 
   const openModalAdicionar = () => {
@@ -136,7 +137,7 @@ const Users = () => {
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
         />
-        <Button onPress={openModalAdicionar} style={styles.criar} >Criar um curso</Button>
+        <Button onPress={openModalAdicionar} style={styles.criar} >Criar um Usuário</Button>
         <View>
           <Overlay
             isVisible={modalAdicionar}
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   criar: {
-    backgroundColor: "#fff",
+    backgroundColor: "#f4f4f4",
     borderWidth: 4,
   },
   containerModal: {

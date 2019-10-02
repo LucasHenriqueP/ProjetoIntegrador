@@ -1,22 +1,24 @@
 import React from 'react';
-import { View, Text, Button } from 'react-native';
+import { View } from 'react-native';
+import { Button } from 'react-native-paper';
 import Background from './Background'
+import Login from './Login';
 
 const Page1 = ({ navigation }) => (
 
     <Background>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: "center" }}>
+            <Login />
             <Button
-                title="Cursos"
+                style={{ marginBottom: 10 }}
+                mode="contained"
                 onPress={() => navigation.navigate('Cursos')}
-            />
-            <Text>
-                {"\n"}
-            </Text>
+            >Cursos</Button>
             <Button
-                title="Users"
+                style={{ margin: 5 }}
+                mode="contained"
                 onPress={() => navigation.navigate('Users')}
-            />
+            >Usuários</Button>
         </View>
     </Background>
 );
