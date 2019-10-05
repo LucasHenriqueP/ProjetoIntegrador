@@ -1,7 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
 import React, { useState, useEffect } from 'react';
-import { Button, TextInput } from 'react-native-paper';
-import { Text, FlatList, View, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { Button } from 'react-native-paper';
+import { Text, FlatList, View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Overlay, Input, Rating } from 'react-native-elements';
 import Loading from './Loading';
 
@@ -13,16 +13,11 @@ const logaCursos = async () => {
   console.log('Documentos de Cursos', querySnapshot.docs);
 }
 
-function editaCurso(item) {
-
-
-}
-
 function removeCurso(item) {
+  const { nome, id, descricao, rating } = item;
   Alert.alert(
     'Remover Curso',
-    "Nome: " + item.nome + "\n" + "ID: " + item.id +
-    "\n" + "Descrição: " + item.descricao + "\n" + "Rating: " + item.rating,
+    `ID: ${id}\nNome: ${nome}\nDescrição: ${descricao}\nRating: ${rating}`,
     [
       {
         text: 'Cancelar',
@@ -34,60 +29,86 @@ function removeCurso(item) {
   )
 }
 
-const renderItem = ({ item }) => (
-
-  <View style={styles.cursoContainer}>
-    <View style={styles.row}>
-      <Text style={styles.cursoId}>Nome: {item.nome}</Text>
-      <TouchableOpacity onPress={() => editaCurso(item)}>
-        <Text style={styles.editarButtonText}>Editar {" "}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => removeCurso(item)}>
-        <Text style={styles.removerButtonText}>Remover</Text>
-      </TouchableOpacity>
-    </View>
-
-    <Text>
-      Id:{" "}
-      <Text style={styles.curso}>{item.id}</Text>
-    </Text>
-    <Text>
-      Descrição:{" "}
-      <Text style={styles.curso}>{item.descricao}</Text>
-    </Text>
-    <Rating
-      imageSize={20}
-      readonly
-      startingValue={item.rating}
-    />
-    <TouchableOpacity style={styles.criadorButton}>
-      <Text style={styles.criadorButtonText}>Criador</Text>
-    </TouchableOpacity>
-    {/* <Text>
-{"\n"}
-    </Text> */}
-  </View>
-)
-
 const cursos = () => {
+  const [ID, setID] = useState('');
   const [Curso, setCurso] = useState('');
   const [Desc, setDesc] = useState('');
-  const [Rating, setRating] = useState('');
+  const [Rat, setRating] = useState('');
   const [loading, setLoading] = useState(true); // Set loading to true on component mount 
   const [Cursos, setCursos] = useState([]); // Initial empty array of Cursos
-  const [modalAdicionar, setModalAdicionar] = useState(false);
+  const [ModalAdicionar, setModalAdicionar] = useState(false);
+  const [ModalEditar, setModalEditar] = useState(false);
 
+
+  function editaCurso(item) {
+    setID(item.id);
+    setCurso(item.nome);
+    setDesc(item.descricao);
+    setRating(item.rating.toString());
+    setModalEditar(true);
+
+  }
+
+  async function modifyCurso() {
+    setModalEditar(false);
+    await ref.doc(ID).set({
+      nome: Curso,
+      descricao: Desc,
+      rating: parseInt(Rat)
+    })
+    setCurso('');
+    setDesc('');
+    setRating('');
+    setID('')
+  }
+
+  function renderItem(item) {
+    item = item.item;
+    return (
+      <View style={styles.cursoContainer}>
+        <View style={styles.row}>
+          <Text style={styles.cursoId}>Nome: {item.nome}</Text>
+          <TouchableOpacity onPress={() => editaCurso(item)}>
+            <Text style={styles.editarButtonText}>Editar {" "}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => removeCurso(item)}>
+            <Text style={styles.removerButtonText}>Remover</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text>
+          Id:{" "}
+          <Text style={styles.curso}>{item.id}</Text>
+        </Text>
+        <Text>
+          Descrição:{" "}
+          <Text style={styles.curso}>{item.descricao}</Text>
+        </Text>
+        <Rating
+          imageSize={20}
+          readonly
+          startingValue={parseInt(item.rating)}
+        />
+        <TouchableOpacity style={styles.criadorButton}>
+          <Text style={styles.criadorButtonText}>Criador</Text>
+        </TouchableOpacity>
+        {/* <Text>
+{"\n"}
+    </Text> */}
+      </View>
+    )
+  }
 
   async function addCurso() {
+    setModalAdicionar(false);
     if (Curso != '' && Desc != '') {
       await ref.add({
         nome: Curso,
         descricao: Desc,
-        rating: Rating ? Rating : 0
+        rating: 0
       });
       setCurso('');
       setDesc('');
-      setRating('');
     }
   }
 
@@ -121,6 +142,11 @@ const cursos = () => {
   const closeModalAdicionar = () => {
     setModalAdicionar(false);
   }
+  const closeModalEditar = () => {
+    setModalEditar(false);
+    setCurso('');
+    setDesc('');
+  }
 
   return (
     <>
@@ -134,9 +160,8 @@ const cursos = () => {
         />
         <Button onPress={openModalAdicionar} style={styles.criar} >Criar um curso</Button>
         <Overlay
-          isVisible={modalAdicionar}
+          isVisible={ModalAdicionar}
           windowBackgroundColor="rgba(255, 255, 255, .5)"
-          overlayBackgroundColor="#a57f60"
           width="100%"
           onBackdropPress={closeModalAdicionar}
           height="auto"
@@ -144,8 +169,21 @@ const cursos = () => {
           <>
             <Input label={'Nome'} value={Curso} onChangeText={setCurso} />
             <Input label={'Descrição'} value={Desc} onChangeText={setDesc} />
-            <Input label={'Rating'} value={Rating} onChangeText={setRating} />
-            <Button style={{ backgroundColor: "#e3a587" }} color="#202a31" onPress={() => addCurso()}>Adicionar Curso</Button>
+            <Button color="#202a31" onPress={() => addCurso()}>Adicionar Curso</Button>
+          </>
+        </Overlay>
+        <Overlay
+          isVisible={ModalEditar}
+          windowBackgroundColor="rgba(255, 255, 255, .5)"
+          width="100%"
+          onBackdropPress={closeModalEditar}
+          height="auto"
+        >
+          <>
+            <Input label={'Nome'} value={Curso} onChangeText={setCurso} />
+            <Input label={'Descrição'} value={Desc} onChangeText={setDesc} />
+            <Input label={'Rating'} keyboardType="numeric" value={Rat} onChangeText={setRating} />
+            <Button color="#202a31" onPress={() => modifyCurso()}>Modificar Curso</Button>
           </>
         </Overlay>
       </View>
