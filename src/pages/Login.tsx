@@ -1,9 +1,12 @@
 import firestore from '@react-native-firebase/firestore';
-import React, { useState, useEffect, Component } from 'react';
+import React, { useState } from 'react';
 import { Button } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { Text, FlatList, View, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, YellowBox } from 'react-native';
 import { Overlay, Input } from 'react-native-elements';
+import { TextInputMask } from 'react-native-masked-text'
+YellowBox.ignoreWarnings(['Warning: State updates']);
+
 import auth from '@react-native-firebase/auth';
 // import { Container } from './styles';
 const ref = firestore().collection('usuarios');
@@ -30,6 +33,11 @@ const Login = () => {
                 celular: Celular,
                 email: email,
             });
+            setNome('');
+            setSobrenome('');
+            setCelular('');
+            setEmail('');
+            setSenha('');
         } catch (e) {
             console.error(e.message);
         }
@@ -54,7 +62,12 @@ const Login = () => {
                 <KeyboardAwareScrollView >
                     <Input label={'Nome'} value={Nome} placeholder={"João"} onChangeText={setNome} />
                     <Input label={'Sobrenome'} value={Sobrenome} placeholder={"Da Silva"} onChangeText={setSobrenome} />
-                    <Input keyboardType="numeric" label={'Celular'} value={Celular} placeholder={"(xx)9xxxx-xxxx"} onChangeText={setCelular} />
+                    <Input label={'Celular'} type={'cel-phone'}
+                        options={{
+                            maskType: 'BRL',
+                            withDDD: true,
+                            dddMask: '(99) '
+                        }} value={Celular} onChangeText={setCelular} placeholder={"(xx)9xxxx-xxxx"} inputComponent={TextInputMask} />
                     <Input keyboardType="email-address"
                         autoCapitalize="none"
                         autoCompleteType="email"
@@ -63,7 +76,7 @@ const Login = () => {
                         value={Email} onChangeText={setEmail}
                         label={'E-mail'}
                         leftIcon={{ type: 'font-awesome', name: 'envelope' }}
-                        placeholder={'email@endereco.com.br'} />
+                        placeholder={'email@endereco.com'} />
                     <Input secureTextEntry={true}
                         textContentType="password"
                         autoCompleteType="password"

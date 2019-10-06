@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
-    "run": "react-native run-android",
+    "run": "react-native run-android --variant=release",
     "test": "jest"
   },
   "repository": {
@@ -53,25 +53,10 @@
     "@types/react": "^16.8.23",
     "@types/react-native": "^0.60.1",
     "@types/react-test-renderer": "^16.8.2",
-    "@typescript-eslint/eslint-plugin": "^2.1.0",
-    "@typescript-eslint/parser": "^2.1.0",
     "babel-jest": "^24.1.0",
-    "eslint": "^6.4.0",
-    "eslint-config-airbnb-typescript": "^5.0.0",
-    "eslint-config-prettier": "^6.2.0",
-    "eslint-config-standard": "^14.0.1",
-    "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-node": "^10.0.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-react": "^7.14.3",
-    "eslint-plugin-react-hooks": "^2.1.0",
-    "eslint-plugin-standard": "^4.0.1",
-    "gulp": "^4.0.2",
     "jest": "^24.1.0",
     "metro-react-native-babel-preset": "^0.56.0",
-    "react-test-renderer": "^16.8.6",
-    "typescript": "^3.6.2"
+    "react-test-renderer": "^16.8.6"
   },
   "jest": {
     "preset": "react-native",

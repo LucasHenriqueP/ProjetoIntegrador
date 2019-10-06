@@ -1,12 +1,9 @@
+# Utilizando node.js em sua versão estável mais recente
 language: node_js
 node_js:
-  - 12.10.0
-
+  - node
+# Antes do script instala todos os módulos (yarn é mais rápido que npm)
 before_script:
-  - yarn global add gulp-cli
-script: gulp ola
-
-
-# notifications:
-#   email:
-#     - lucashenrique.pereira@hotmail.com
+  - yarn install
+# Depois de instalar roda o jest com -u para sempre criar uma nova snapshot
+script: yarn test -u

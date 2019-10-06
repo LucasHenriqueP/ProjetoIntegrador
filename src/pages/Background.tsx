@@ -6,7 +6,7 @@ export default class BackgroundImage extends Component {
     render() {
         return (
             <ImageBackground
-                blurRadius={1} source={require('../../static/background.jpg')}
+                blurRadius={1} source={require('../assets/background.jpg')}
                 style={styles.backgroundImage}>
 
                 {this.props.children}

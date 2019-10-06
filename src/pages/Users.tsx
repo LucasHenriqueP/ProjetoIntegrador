@@ -1,7 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
 import React, { useState, useEffect } from 'react';
 import { Button } from 'react-native-paper';
-import { Text, FlatList, View, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, YellowBox } from 'react-native';
+import { Text, FlatList, View, TouchableOpacity, StyleSheet, Alert, YellowBox } from 'react-native';
 import { Overlay, Input } from 'react-native-elements';
 import { TextInputMask } from 'react-native-masked-text'
 import Loading from './Loading';
@@ -203,8 +203,13 @@ const Users = () => {
                   maskType: 'BRL',
                   withDDD: true,
                   dddMask: '(99) '
-                }} placeholder={"(xx)9xxxx-xxxx"} inputComponent={TextInputMask}/>
-              <Input label={'E-mail'} value={Email} placeholder={"joao@dasilva.com"} onChangeText={setEmail} />
+                }} placeholder={"(xx)9xxxx-xxxx"} inputComponent={TextInputMask} />
+              <Input label={'E-mail'}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCompleteType="email"
+                value={Email}
+                placeholder={"joao@dasilva.com"} onChangeText={setEmail} />
               <Button color="#202a31" onPress={() => addUser()}>Adicionar Usuário</Button>
             </>
           </Overlay>
@@ -224,7 +229,12 @@ const Users = () => {
                   withDDD: true,
                   dddMask: '(99) '
                 }} value={Celular} onChangeText={setCelular} placeholder={"(xx)9xxxx-xxxx"} inputComponent={TextInputMask} />
-              <Input label={'E-mail'} value={Email} placeholder={"joao@dasilva.com"} onChangeText={setEmail} />
+              <Input label={'E-mail'}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCompleteType="email"
+                value={Email}
+                placeholder={"joao@dasilva.com"} onChangeText={setEmail} />
               <Button color="#202a31" onPress={() => modifyUser()}>Modificar Usuário</Button>
             </>
           </Overlay>
