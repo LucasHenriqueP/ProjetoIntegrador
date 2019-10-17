@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
-    "run": "react-native run-android --variant=release",
+    "run": "react-native run-android",
+    "release": "react-native run-android --variant=release",
     "test": "jest"
   },
   "repository": {
@@ -32,6 +33,7 @@
     "react-native": "^0.61.1",
     "react-native-blur-overlay": "^1.0.7",
     "react-native-elements": "^1.2.3",
+    "react-native-flash-message": "^0.1.15",
     "react-native-gesture-handler": "^1.4.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.1",
     "react-native-masked-text": "^1.13.0",
