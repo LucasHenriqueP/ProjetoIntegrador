@@ -27,6 +27,7 @@ const Login = () => {
   const [Senha, setSenha] = useState("");
   const [isSigninInProgress, setIsSigninInProgress] = useState(false);
   const [modalCadastro, setmodalCadastro] = useState(false);
+  const [ModalLoading, setModalLoading] = useState(false);
 
   function loginGoogle() {
     return;
@@ -36,21 +37,96 @@ const Login = () => {
     return;
   }
 
+  function catchErros(e) {
+    if (e.code == "auth/email-already-in-use") {
+      showMessage({
+        message: "Erro, este E-mail já está em uso",
+        type: "danger",
+        icon: "danger",
+        duration: 1500
+      });
+    } else if (e.code == "auth/invalid-email") {
+      showMessage({
+        message: "Erro, E-mail inválido ou incorreto",
+        type: "danger",
+        icon: "danger",
+        duration: 1500
+      });
+    } else if (e.code == "auth/weak-password") {
+      showMessage({
+        message: "Erro, Senha deve ter pelo menos 6 caracteres",
+        type: "danger",
+        icon: "danger",
+        duration: 1500
+      });
+    } else if (e.code == "auth/user-not-found") {
+      showMessage({
+        message: "Erro, E-mail não cadastrado",
+        type: "danger",
+        icon: "danger",
+        duration: 1500
+      });
+    } else if (e.code == "auth/wrong-password") {
+      showMessage({
+        message: "Erro, Senha inválida",
+        type: "danger",
+        icon: "danger",
+        duration: 1500
+      });
+    } else {
+      showMessage({
+        message: "Tente novamente mais tarde",
+        type: "danger",
+        icon: "danger",
+        duration: 2500
+      });
+      console.log(e);
+    }
+  }
+
   async function register(email, password, Nome, Sobrenome, Celular) {
-    setLoading(true);
+    if (!email || !password || !Nome || !Sobrenome || !Celular) {
+      var campos = [];
+      if (!email) campos.push("Email");
+      if (!password) campos.push("Senha");
+      if (!Nome) campos.push("Nome");
+      if (!Sobrenome) campos.push("Sobrenome");
+      if (!Celular) campos.push("Celular");
+
+      showMessage({
+        message: "Erro, o(s) seguinte(s) campos são obrigatórios:",
+        description: campos.toString(),
+        type: "danger",
+        icon: "danger",
+        duration: 1500
+      });
+      return;
+    }
+    if (Celular.toString().length != 15) {
+      showMessage({
+        message: "Erro, celular inválido",
+        type: "danger",
+        icon: "danger",
+        duration: 1500
+      });
+      return;
+    }
     try {
-      setmodalCadastro(false);
       const userInfo = await auth().createUserWithEmailAndPassword(
         email,
         password
       );
+      setmodalCadastro(false);
+      setLoading(true);
 
       await ref.doc(userInfo.user.uid).set({
-        uid: userInfo.user.uid,
         nome: Nome,
         sobrenome: Sobrenome,
         celular: Celular,
-        email: email
+        email: email,
+        cursosOferecidos: [],
+        favoritos: [],
+        historico: []
       });
       setNome("");
       setSobrenome("");
@@ -58,10 +134,10 @@ const Login = () => {
       setEmail("");
       setSenha("");
       auth().currentUser.sendEmailVerification();
-      setLoading(false);
     } catch (e) {
-      console.error(e.message);
+      catchErros(e);
     }
+    setLoading(false);
   }
 
   if (loading) {
@@ -72,8 +148,32 @@ const Login = () => {
     );
   }
 
+  async function senha() {
+    if (!Email) {
+      showMessage({
+        message: "Email em branco!",
+        type: "danger",
+        icon: "danger",
+        duration: 2500
+      });
+      return;
+    }
+    try {
+      await auth().sendPasswordResetEmail(Email);
+      showMessage({
+        message: "Email enviado com sucesso!",
+        type: "success",
+        icon: "success",
+        duration: 2500
+      });
+    } catch (e) {
+      catchErros(e);
+    }
+    return;
+  }
+
   async function login() {
-    if (Email == "" || Senha == "") {
+    if (!Email || !Senha) {
       showMessage({
         message: "Usuário ou Senha em branco!",
         type: "danger",
@@ -82,15 +182,16 @@ const Login = () => {
       });
       return;
     }
-    setLoading(true);
     try {
+      setModalLoading(true);
       await auth().signInWithEmailAndPassword(Email, Senha);
+
       setEmail("");
       setSenha("");
-      setLoading(false);
     } catch (e) {
-      console.error(e.message);
+      catchErros(e);
     }
+    setModalLoading(false);
   }
   const openmodalCadastro = () => {
     setmodalCadastro(true);
@@ -101,6 +202,15 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
+      <Overlay
+        style={styles.load}
+        isVisible={ModalLoading}
+        windowBackgroundColor="rgba(255, 255, 255, 0)"
+        width="auto"
+        height="10%"
+      >
+        <Loading />
+      </Overlay>
       <Overlay
         isVisible={modalCadastro}
         windowBackgroundColor="rgba(255, 255, 255, 0)"
@@ -192,9 +302,21 @@ const Login = () => {
           placeholder={"senha"}
         ></Input>
       </View>
-      <Button style={styles.button} color="#000" onPress={() => login()}>
-        Login
-      </Button>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "flex-start"
+        }}
+      >
+        <Button style={styles.senha} color="#000" onPress={() => senha()}>
+          Esqueceu a senha?
+        </Button>
+        <Button style={styles.login} color="#000" onPress={() => login()}>
+          Login
+        </Button>
+      </View>
+
       <Button style={styles.touch} onPress={openmodalCadastro} mode="contained">
         Ainda não é cadastrado? Registre-se
       </Button>
@@ -232,6 +354,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#7986CB",
     marginTop: 10
   },
+  senha: {
+    backgroundColor: "#7986CB",
+    marginTop: 10
+  },
+  login: {
+    backgroundColor: "#7986CB",
+    marginTop: 10
+  },
   touch: {
     margin: 10,
     backgroundColor: "#1DE9B6"
@@ -241,6 +371,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start"
+  },
+  load: {
+    flex: 1,
+    alignContent: "center",
+    justifyContent: "center",
+    alignItems: "center"
   }
 });
 

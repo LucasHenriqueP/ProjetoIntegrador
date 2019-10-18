@@ -10,7 +10,7 @@ import {
   StyleSheet,
   Alert
 } from "react-native";
-import { Overlay, Input, Rating } from "react-native-elements";
+import { Overlay, Input, Rating, Icon } from "react-native-elements";
 import Loading from "./Loading";
 import { showMessage } from "react-native-flash-message";
 import { TextInputMask } from "react-native-masked-text";
@@ -56,6 +56,40 @@ const cursos = () => {
   const [Sobrenome, setSobrenome] = useState("");
   const [Celular, setCelular] = useState("");
   const [Email, setEmail] = useState("");
+  const [favs, setFavs] = useState([]);
+
+  async function favoritaCurso(id) {
+    var user = auth().currentUser.uid;
+    setModalLoading(true);
+
+    if (favs.indexOf(id) == -1) {
+      await firestore()
+        .collection("usuarios")
+        .doc(user)
+        // Caso for para deixar uma referência (não sei o que muda, mas ok né)
+        //                   firestore.FieldValue.arrayUnion(firestore().doc(`cursos/${id}`)));
+        // no banco vai ficar /cursos/id_aqui
+        // acho que é pra pegar o caminho absoluto mais fácil ???
+        .update("favoritos", firestore.FieldValue.arrayUnion(`${id}`));
+      var arr = [].concat(favs);
+      arr.push(id);
+      setFavs(arr);
+    }
+    setModalLoading(false);
+  }
+
+  async function unfavoritaCurso(id) {
+    var user = auth().currentUser.uid;
+    setModalLoading(true);
+    let arr = [].concat(favs);
+    arr.splice(favs.indexOf(id), 1);
+    setFavs(arr);
+    await firestore()
+      .collection("usuarios")
+      .doc(user)
+      .update("favoritos", firestore.FieldValue.arrayRemove(id));
+    setModalLoading(false);
+  }
 
   function showCriador(criador) {
     setModalLoading(true);
@@ -117,7 +151,7 @@ const cursos = () => {
     setDesc("");
     setRating("");
     setID("");
-    setPreco("");
+    setPreco("R$0,00");
   }
 
   function renderItem(item) {
@@ -126,14 +160,41 @@ const cursos = () => {
       <View style={styles.cursoContainer}>
         <View style={styles.row}>
           <Text style={styles.cursoId}>Nome: {item.nome}</Text>
-          <TouchableOpacity onPress={() => editaCurso(item)}>
-            <Text style={styles.editarButtonText}>Editar </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => removeCurso(item)}>
-            <Text style={styles.removerButtonText}>Remover</Text>
-          </TouchableOpacity>
-        </View>
 
+          {/* se não for o criador do curso */}
+          {item.criador !== auth().currentUser.uid &&
+            favs.indexOf(item.id) !== -1 && (
+              <TouchableOpacity onPress={() => unfavoritaCurso(item.id)}>
+                <Icon
+                  style={styles.editarButtonText}
+                  name="star"
+                  type="font-awesome"
+                />
+              </TouchableOpacity>
+            )}
+          {item.criador !== auth().currentUser.uid &&
+            favs.indexOf(item.id) == -1 && (
+              <TouchableOpacity onPress={() => favoritaCurso(item.id)}>
+                <Icon
+                  style={styles.editarButtonText}
+                  name="star-o"
+                  type="font-awesome"
+                />
+              </TouchableOpacity>
+            )}
+
+          {/* se for o criador do curso */}
+          {item.criador == auth().currentUser.uid && (
+            <View style={styles.rowComponent}>
+              <TouchableOpacity onPress={() => editaCurso(item)}>
+                <Text style={styles.editarButtonText}>Editar </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => removeCurso(item)}>
+                <Text style={styles.removerButtonText}>Remover</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
         <Text>
           Id: <Text style={styles.curso}>{item.id}</Text>
         </Text>
@@ -155,17 +216,30 @@ const cursos = () => {
   }
 
   async function addCurso() {
+    var user = auth().currentUser.uid;
     setModalAdicionar(false);
     if (Curso != "" && Desc != "") {
-      await ref.add({
-        nome: Curso,
-        descricao: Desc,
-        rating: 0,
-        preco: Preco,
-        criador: auth().currentUser.uid
-      });
+      await ref
+        .add({
+          nome: Curso,
+          descricao: Desc,
+          rating: 0,
+          preco: Preco,
+          criador: user
+        })
+        .then(function(doc) {
+          firestore()
+            .collection("usuarios")
+            .doc(user)
+            .update(
+              "cursosOferecidos",
+              firestore.FieldValue.arrayUnion(doc.id)
+            );
+        });
+
       setCurso("");
       setDesc("");
+      setPreco("R$0,00");
     }
   }
 
@@ -176,6 +250,15 @@ const cursos = () => {
   }, [Preco]);
 
   useEffect(() => {
+    var user = auth().currentUser.uid;
+    firestore()
+      .collection("usuarios")
+      .doc(user)
+      .get()
+      .then(function(doc) {
+        const { favoritos } = doc.data();
+        setFavs(favoritos.toString());
+      });
     return ref.onSnapshot(querySnapshot => {
       const list = [];
       querySnapshot.forEach(doc => {
@@ -188,7 +271,6 @@ const cursos = () => {
           criador,
           preco
         });
-        // console.log(doc.data())
       });
       setCursos(list);
       if (loading) {
@@ -391,7 +473,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f4f4f4",
     borderWidth: 2
   },
-  textInputStyle: {}
+  rowComponent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start"
+  }
 });
 
 export default cursos;

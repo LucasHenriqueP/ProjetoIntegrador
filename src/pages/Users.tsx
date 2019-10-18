@@ -96,9 +96,6 @@ const Users = () => {
           </TouchableOpacity>
         </View>
         <Text>
-          UID: <Text style={styles.User}>{item.uid}</Text>
-        </Text>
-        <Text>
           Nome: <Text style={styles.User}>{item.nome}</Text>
         </Text>
         <Text>
@@ -117,11 +114,13 @@ const Users = () => {
   async function addUser() {
     if (Nome != "" && Sobrenome != "") {
       await ref.add({
-        uid: "",
         nome: Nome,
         sobrenome: Sobrenome,
         celular: Celular,
-        email: Email
+        email: Email,
+        cursosOferecidos: {},
+        favoritos: {},
+        historico: {}
       });
       setNome("");
       setSobrenome("");

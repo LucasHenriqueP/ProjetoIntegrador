@@ -18,20 +18,29 @@ const Page1 = ({ navigation }) => {
   // Handle user state changes
   function onAuthStateChanged(user) {
     setUser(user);
-    if (user !== null) {
+    if (loading) setLoading(false);
+    if (user && auth().currentUser.emailVerified) {
       showMessage({
         message: "Autenticado com sucesso!",
         type: "success",
         icon: "success",
-        duration: 2500
+        duration: 2000
       });
     }
-    if (loading) setLoading(false); // console.log(user);
   }
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
+    if (user && !auth().currentUser.emailVerified && !email) {
+      showMessage({
+        message: "Não esqueça de verificar o seu email!",
+        description: "Depois disso, é necessário relogar",
+        type: "warning",
+        icon: "warning",
+        duration: 4500
+      });
+    }
+    return subscriber;
   }, []);
 
   if (loading) return <Loading />;
@@ -51,28 +60,28 @@ const Page1 = ({ navigation }) => {
     );
   }
 
-  if (!auth().currentUser.emailVerified && !email) {
-    showMessage({
-      message: "Não esqueça de verificar o seu email!",
-      description: "Depois disso, é necessário relogar",
-      type: "warning",
-      icon: "warning",
-      duration: 3500
-    });
-  }
-
   async function sendEmail() {
     setEmail(true);
     setModalLoading(true);
-    await auth().currentUser.sendEmailVerification();
+    try {
+      await auth().currentUser.sendEmailVerification();
+      showMessage({
+        message: "Verifique o seu E-Mail e sua caixa de Spam",
+        description: "Depois disso, é necessário relogar",
+        type: "warning",
+        icon: "warning",
+        duration: 4500
+      });
+    } catch (error) {
+      showMessage({
+        message: "Um erro ocorreu",
+        description: "Tente novamente mais tarde",
+        type: "danger",
+        icon: "danger",
+        duration: 5000
+      });
+    }
     setModalLoading(false);
-    showMessage({
-      message: "Verifique o seu E-Mail e sua caixa de Spam",
-      description: "Depois disso, é necessário relogar",
-      type: "warning",
-      icon: "warning",
-      duration: 3500
-    });
   }
 
   return (
