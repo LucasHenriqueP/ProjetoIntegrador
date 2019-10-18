@@ -6,6 +6,10 @@ import { View, StyleSheet, YellowBox, Text } from "react-native";
 import { Overlay, Input } from "react-native-elements";
 import { TextInputMask } from "react-native-masked-text";
 import { showMessage, hideMessage } from "react-native-flash-message";
+import {
+  GoogleSignin,
+  GoogleSigninButton
+} from "@react-native-community/google-signin";
 
 YellowBox.ignoreWarnings(["Warning: State updates"]);
 
@@ -21,7 +25,16 @@ const Login = () => {
   const [Celular, setCelular] = useState("");
   const [Email, setEmail] = useState("");
   const [Senha, setSenha] = useState("");
+  const [isSigninInProgress, setIsSigninInProgress] = useState(false);
   const [modalCadastro, setmodalCadastro] = useState(false);
+
+  function loginGoogle() {
+    return;
+  }
+
+  function loginFace() {
+    return;
+  }
 
   async function register(email, password, Nome, Sobrenome, Celular) {
     setLoading(true);
@@ -185,7 +198,14 @@ const Login = () => {
       <Button style={styles.touch} onPress={openmodalCadastro} mode="contained">
         Ainda não é cadastrado? Registre-se
       </Button>
-      {/* <Text>Ou faça login como uma das opções abaixo</Text> */}
+      <Text>Ou faça login como uma das opções abaixo</Text>
+      <GoogleSigninButton
+        style={{ width: 312, height: 48 }}
+        size={GoogleSigninButton.Size.Wide}
+        color={GoogleSigninButton.Color.Dark}
+        onPress={loginGoogle}
+        disabled={isSigninInProgress}
+      />
     </View>
   );
 };

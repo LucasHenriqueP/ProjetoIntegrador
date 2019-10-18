@@ -43,7 +43,7 @@ const cursos = () => {
   //essa porra ta muito feia, certeza que to fazendo algo de errado
   const [ID, setID] = useState("");
   const [Curso, setCurso] = useState("");
-  const [Preco, setPreco] = useState("");
+  const [Preco, setPreco] = useState("R$0,00");
   const [Desc, setDesc] = useState("");
   const [Rat, setRating] = useState("");
   const [loading, setLoading] = useState(true); // Set loading to true on component mount
@@ -51,12 +51,15 @@ const cursos = () => {
   const [ModalAdicionar, setModalAdicionar] = useState(false);
   const [ModalEditar, setModalEditar] = useState(false);
   const [ModalVer, setModalVer] = useState(false);
+  const [ModalLoading, setModalLoading] = useState(false);
   const [Nome, setNome] = useState("");
   const [Sobrenome, setSobrenome] = useState("");
   const [Celular, setCelular] = useState("");
   const [Email, setEmail] = useState("");
 
   function showCriador(criador) {
+    setModalLoading(true);
+
     const pegaCriador = firestore()
       .collection("usuarios")
       .doc(criador);
@@ -65,6 +68,7 @@ const cursos = () => {
       .get()
       .then(function(doc) {
         if (doc.exists) {
+          setModalLoading(false);
           setModalVer(true);
           const { nome, sobrenome, celular, email } = doc.data();
           setNome(nome);
@@ -72,11 +76,13 @@ const cursos = () => {
           setCelular(celular);
           setEmail(email);
         } else {
+          setModalLoading(false);
           // doc.data() will be undefined in this case
           showMessage({
             message: "Ocorreu um erro:",
             description: "Criador Inexistente",
-            type: "danger"
+            type: "danger",
+            duration: 2500
           });
         }
       })
@@ -84,7 +90,8 @@ const cursos = () => {
         showMessage({
           message: "Ocorreu um erro:",
           description: error,
-          type: "danger"
+          type: "danger",
+          duration: 2500
         });
       });
   }
@@ -94,6 +101,7 @@ const cursos = () => {
     setCurso(item.nome);
     setDesc(item.descricao);
     setRating(item.rating.toString());
+    setPreco(item.preco);
     setModalEditar(true);
   }
 
@@ -102,12 +110,14 @@ const cursos = () => {
     await ref.doc(ID).set({
       nome: Curso,
       descricao: Desc,
-      rating: parseInt(Rat)
+      rating: parseInt(Rat),
+      preco: Preco
     });
     setCurso("");
     setDesc("");
     setRating("");
     setID("");
+    setPreco("");
   }
 
   function renderItem(item) {
@@ -151,13 +161,19 @@ const cursos = () => {
         nome: Curso,
         descricao: Desc,
         rating: 0,
-        preco: Preco ? Preco : "Gratuito",
+        preco: Preco,
         criador: auth().currentUser.uid
       });
       setCurso("");
       setDesc("");
     }
   }
+
+  useEffect(() => {
+    if (Preco == "R$0,00") {
+      setPreco("Gratuito");
+    }
+  }, [Preco]);
 
   useEffect(() => {
     return ref.onSnapshot(querySnapshot => {
@@ -198,11 +214,21 @@ const cursos = () => {
     setModalEditar(false);
     setCurso("");
     setDesc("");
+    setPreco("R$0,00");
   };
 
   return (
     <>
       <View style={styles.container}>
+        <Overlay
+          style={styles.load}
+          isVisible={ModalLoading}
+          windowBackgroundColor="rgba(255, 255, 255, 0)"
+          width="auto"
+          height="10%"
+        >
+          <Loading />
+        </Overlay>
         <FlatList
           contentContainerStyle={styles.list}
           style={{ flex: 1 }}
@@ -233,7 +259,6 @@ const cursos = () => {
                 unit: "R$",
                 suffixUnit: ""
               }}
-              placeholder={"R$0000,00"}
               inputComponent={TextInputMask}
               value={Preco}
               onChangeText={setPreco}
@@ -259,6 +284,20 @@ const cursos = () => {
               value={Rat}
               onChangeText={setRating}
             />
+            <Input
+              label={"Preço"}
+              type={"money"}
+              options={{
+                precision: 2,
+                separator: ",",
+                delimiter: ".",
+                unit: "R$",
+                suffixUnit: ""
+              }}
+              inputComponent={TextInputMask}
+              value={Preco}
+              onChangeText={setPreco}
+            />
             <Button color="#202a31" onPress={() => modifyCurso()}>
               Modificar Curso
             </Button>
@@ -266,7 +305,7 @@ const cursos = () => {
         </Overlay>
         <Overlay
           isVisible={ModalVer}
-          windowBackgroundColor="rgba(255, 255, 255, 1)"
+          windowBackgroundColor="rgba(255, 255, 255, 0.7)"
           width="100%"
           onBackdropPress={closeModalVer}
           height="auto"

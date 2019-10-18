@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "react-native start",
-    "run": "react-native run-android",
+    "run-android": "react-native run-android",
     "release": "react-native run-android --variant=release",
     "test": "jest"
   },
@@ -22,6 +22,7 @@
   "dependencies": {
     "@react-native-community/blur": "^3.3.1",
     "@react-native-community/cli": "^2.9.0",
+    "@react-native-community/google-signin": "^3.0.2",
     "@react-native-firebase/app": "^6.0.0",
     "@react-native-firebase/auth": "^6.0.0",
     "@react-native-firebase/firestore": "^6.0.0",
