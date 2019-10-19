@@ -1,8 +1,13 @@
-import firestore from "@react-native-firebase/firestore";
 import React, { useState } from "react";
 import { Button } from "react-native-paper";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { View, StyleSheet, YellowBox, Text } from "react-native";
+import {
+  View,
+  StyleSheet,
+  YellowBox,
+  Text,
+  KeyboardAvoidingView
+} from "react-native";
 import { Overlay, Input } from "react-native-elements";
 import { TextInputMask } from "react-native-masked-text";
 import { showMessage, hideMessage } from "react-native-flash-message";
@@ -15,11 +20,11 @@ YellowBox.ignoreWarnings(["Warning: State updates"]);
 
 import auth from "@react-native-firebase/auth";
 import Loading from "../../components/Loading";
-// import { Container } from './styles';
-const ref = firestore().collection("usuarios");
+import MLoading from "../../components/ModalLoading";
+import * as Service from "./Service";
 
 const Login = () => {
-  const [loading, setLoading] = useState(false); // Set loading to true on component mount
+  const [loading, setLoading] = useState(false);
   const [Nome, setNome] = useState("");
   const [Sobrenome, setSobrenome] = useState("");
   const [Celular, setCelular] = useState("");
@@ -37,107 +42,34 @@ const Login = () => {
     return;
   }
 
-  function catchErros(e) {
-    if (e.code == "auth/email-already-in-use") {
-      showMessage({
-        message: "Erro, este E-mail já está em uso",
-        type: "danger",
-        icon: "danger",
-        duration: 1500
-      });
-    } else if (e.code == "auth/invalid-email") {
-      showMessage({
-        message: "Erro, E-mail inválido ou incorreto",
-        type: "danger",
-        icon: "danger",
-        duration: 1500
-      });
-    } else if (e.code == "auth/weak-password") {
-      showMessage({
-        message: "Erro, Senha deve ter pelo menos 6 caracteres",
-        type: "danger",
-        icon: "danger",
-        duration: 1500
-      });
-    } else if (e.code == "auth/user-not-found") {
-      showMessage({
-        message: "Erro, E-mail não cadastrado",
-        type: "danger",
-        icon: "danger",
-        duration: 1500
-      });
-    } else if (e.code == "auth/wrong-password") {
-      showMessage({
-        message: "Erro, Senha inválida",
-        type: "danger",
-        icon: "danger",
-        duration: 1500
-      });
-    } else {
-      showMessage({
-        message: "Tente novamente mais tarde",
-        type: "danger",
-        icon: "danger",
-        duration: 2500
-      });
-      console.log(e);
-    }
-  }
+  async function registrar() {
+    const verifica = Service.verifica({
+      Email,
+      Senha,
+      Nome,
+      Sobrenome,
+      Celular
+    });
 
-  async function register(email, password, Nome, Sobrenome, Celular) {
-    if (!email || !password || !Nome || !Sobrenome || !Celular) {
-      var campos = [];
-      if (!email) campos.push("Email");
-      if (!password) campos.push("Senha");
-      if (!Nome) campos.push("Nome");
-      if (!Sobrenome) campos.push("Sobrenome");
-      if (!Celular) campos.push("Celular");
+    if (verifica) {
+      try {
+        setLoading(true);
+        setmodalCadastro(false);
+        const userInfo = await Service.registraFirebase({ Email, Senha });
 
-      showMessage({
-        message: "Erro, o(s) seguinte(s) campos são obrigatórios:",
-        description: campos.toString(),
-        type: "danger",
-        icon: "danger",
-        duration: 1500
-      });
-      return;
-    }
-    if (Celular.toString().length != 15) {
-      showMessage({
-        message: "Erro, celular inválido",
-        type: "danger",
-        icon: "danger",
-        duration: 1500
-      });
-      return;
-    }
-    try {
-      const userInfo = await auth().createUserWithEmailAndPassword(
-        email,
-        password
-      );
-      setmodalCadastro(false);
-      setLoading(true);
+        const ID = userInfo.user.uid;
+        Service.criaUser({ ID, Email, Nome, Sobrenome, Celular });
 
-      await ref.doc(userInfo.user.uid).set({
-        nome: Nome,
-        sobrenome: Sobrenome,
-        celular: Celular,
-        email: email,
-        cursosOferecidos: [],
-        favoritos: [],
-        historico: []
-      });
-      setNome("");
-      setSobrenome("");
-      setCelular("");
-      setEmail("");
-      setSenha("");
-      auth().currentUser.sendEmailVerification();
-    } catch (e) {
-      catchErros(e);
+        setNome("");
+        setSobrenome("");
+        setCelular("");
+        setEmail("");
+        setSenha("");
+      } catch (e) {
+        Service.catchErros(e);
+      }
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   if (loading) {
@@ -148,7 +80,7 @@ const Login = () => {
     );
   }
 
-  async function senha() {
+  async function resetaSenha() {
     if (!Email) {
       showMessage({
         message: "Digite o seu E-mail acima",
@@ -158,9 +90,10 @@ const Login = () => {
       });
       return;
     }
+    // usar try-catch não seria a melhor opção aqui, mas com .catch() não tava funcionando direito
     try {
       setModalLoading(true);
-      await auth().sendPasswordResetEmail(Email);
+      auth().sendPasswordResetEmail(Email);
       showMessage({
         message: "Email enviado com sucesso!",
         type: "success",
@@ -168,13 +101,13 @@ const Login = () => {
         duration: 2500
       });
     } catch (e) {
-      catchErros(e);
+      Service.catchErros(e);
     }
     setModalLoading(false);
     return;
   }
 
-  async function login() {
+  async function entrar() {
     if (!Email || !Senha) {
       showMessage({
         message: "Usuário ou Senha em branco!",
@@ -191,10 +124,11 @@ const Login = () => {
       setEmail("");
       setSenha("");
     } catch (e) {
-      catchErros(e);
+      Service.catchErros(e);
     }
     setModalLoading(false);
   }
+
   const openmodalCadastro = () => {
     setmodalCadastro(true);
   };
@@ -203,19 +137,12 @@ const Login = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Overlay
-        style={styles.load}
-        isVisible={ModalLoading}
-        windowBackgroundColor="rgba(255, 255, 255, 0)"
-        width="auto"
-        height="10%"
-      >
-        <Loading />
-      </Overlay>
+    <KeyboardAvoidingView behavior="height" enabled style={styles.container}>
+      <MLoading ModalLoading={ModalLoading} />
       <Overlay
         isVisible={modalCadastro}
         windowBackgroundColor="rgba(255, 255, 255, 0)"
+        animationType="slide"
         width="100%"
         onBackdropPress={closemodalCadastro}
         height="auto"
@@ -244,7 +171,7 @@ const Login = () => {
             }}
             value={Celular}
             onChangeText={setCelular}
-            placeholder={"(xx)9xxxx-xxxx"}
+            placeholder={"(xx) 9xxxx-xxxx"}
             inputComponent={TextInputMask}
           />
           <Input
@@ -269,10 +196,7 @@ const Login = () => {
             leftIcon={{ type: "font-awesome", name: "lock" }}
             placeholder={"senha"}
           />
-          <Button
-            color="#202a31"
-            onPress={() => register(Email, Senha, Nome, Sobrenome, Celular)}
-          >
+          <Button color="#202a31" onPress={() => registrar()}>
             Cadastrar
           </Button>
         </KeyboardAwareScrollView>
@@ -302,12 +226,11 @@ const Login = () => {
           leftIcon={{ type: "font-awesome", name: "lock" }}
           placeholder={"************"}
         ></Input>
-
         <Button
           style={styles.senha}
           icon="lock"
           color="#000"
-          onPress={() => senha()}
+          onPress={() => resetaSenha()}
         >
           Esqueceu a senha?
         </Button>
@@ -319,7 +242,7 @@ const Login = () => {
           alignItems: "flex-start"
         }}
       >
-        <Button style={styles.login} color="#000" onPress={() => login()}>
+        <Button style={styles.login} color="#000" onPress={() => entrar()}>
           Login
         </Button>
       </View>
@@ -333,23 +256,24 @@ const Login = () => {
       />
       <Button
         style={styles.touch}
-        color="#fff"
+        color="#000"
         onPress={openmodalCadastro}
         mode="text"
       >
         Ainda não é cadastrado? Registre-se
       </Button>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    top: 50,
+    paddingTop: 60,
     alignContent: "flex-start",
     justifyContent: "flex-start",
-    alignItems: "center"
+    alignItems: "center",
+    backgroundColor: "#ddd"
   },
   input: {
     backgroundColor: "#ffffff",
@@ -376,7 +300,7 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   touch: {
-    bottom: 50,
+    bottom: 10,
     position: "absolute"
   },
   row: {

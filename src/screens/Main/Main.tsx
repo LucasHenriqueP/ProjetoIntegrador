@@ -7,6 +7,7 @@ import auth from "@react-native-firebase/auth";
 import Loading from "../../components/Loading";
 import { showMessage } from "react-native-flash-message";
 import { Overlay } from "react-native-elements";
+import * as Service from "./Service";
 
 const Page1 = ({ navigation }) => {
   // Set an loading state whilst Firebase connects
@@ -46,41 +47,13 @@ const Page1 = ({ navigation }) => {
   if (loading) return <Loading />;
 
   if (!user) {
-    return (
-      <Background
-        style={{
-          flex: 1,
-          alignContent: "center",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
-        <Login />
-      </Background>
-    );
+    return <Login />;
   }
 
   async function sendEmail() {
     setEmail(true);
     setModalLoading(true);
-    try {
-      await auth().currentUser.sendEmailVerification();
-      showMessage({
-        message: "Verifique o seu E-Mail e sua caixa de Spam",
-        description: "Depois disso, é necessário relogar",
-        type: "warning",
-        icon: "warning",
-        duration: 4500
-      });
-    } catch (error) {
-      showMessage({
-        message: "Um erro ocorreu",
-        description: "Tente novamente mais tarde",
-        type: "danger",
-        icon: "danger",
-        duration: 5000
-      });
-    }
+    Service.sendEmail();
     setModalLoading(false);
   }
 
@@ -136,7 +109,7 @@ const Page1 = ({ navigation }) => {
         >
           UsuáriosADM
         </Button>
-        <Button onPress={() => auth().signOut()}>Sair</Button>
+        <Button onPress={() => Service.sair()}>Sair</Button>
       </View>
     </Background>
   );

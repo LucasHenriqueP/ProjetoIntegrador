@@ -1,6 +1,8 @@
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import { Alert } from "react-native";
+import { showMessage } from "react-native-flash-message";
+
 const ref = firestore().collection("cursos");
 
 export function getRef() {
@@ -23,14 +25,25 @@ export function removeCurso(item) {
         text: "Cancelar",
         style: "cancel"
       },
-      { text: "Remover", onPress: () => ref.doc(item.id).delete() }
+      { text: "Remover", onPress: () => remove() }
     ],
     { cancelable: true }
   );
+  function remove() {
+    ref
+      .doc(item.id)
+      .delete()
+      .then(() => {
+        firestore()
+          .collection("usuarios")
+          .doc(auth().currentUser.uid)
+          .update("cursosOferecidos", firestore.FieldValue.arrayRemove(id));
+      });
+  }
 }
 
 export async function favoritaCurso(id, favs) {
-  var user = auth().currentUser.uid;
+  const user = auth().currentUser.uid;
 
   if (favs.indexOf(id) == -1) {
     await firestore()
@@ -48,8 +61,8 @@ export async function favoritaCurso(id, favs) {
 }
 
 export async function unfavoritaCurso(id, favs) {
-  var user = auth().currentUser.uid;
-  let arr = favs;
+  const user = auth().currentUser.uid;
+  var arr = favs;
   arr.splice(favs.indexOf(id), 1);
   await firestore()
     .collection("usuarios")
@@ -69,4 +82,46 @@ export async function modifyCurso(data) {
     },
     { merge: true }
   );
+}
+
+export async function pegaCriador(criador) {
+  var usuario: { [key: string]: any };
+  await firestore()
+    .collection("usuarios")
+    .doc(criador)
+    .get()
+    .then(async function(doc) {
+      if (doc.exists) {
+        usuario = doc.data();
+      }
+    })
+    .catch(function(error) {
+      showMessage({
+        message: "Ocorreu um erro:",
+        description: error,
+        type: "danger",
+        duration: 2500
+      });
+    });
+  return usuario;
+}
+
+export async function addCurso(data) {
+  const user = auth().currentUser.uid;
+
+  const { Curso, Desc, Preco } = data;
+  await ref
+    .add({
+      nome: Curso,
+      descricao: Desc,
+      rating: 0,
+      preco: Preco,
+      criador: user
+    })
+    .then(function(doc) {
+      firestore()
+        .collection("usuarios")
+        .doc(user)
+        .update("cursosOferecidos", firestore.FieldValue.arrayUnion(doc.id));
+    });
 }

@@ -13,41 +13,13 @@ import {
 import { Overlay, Input } from "react-native-elements";
 import { TextInputMask } from "react-native-masked-text";
 import Loading from "../../../components/Loading";
+import MLoading from "../../../components/ModalLoading";
+import * as Service from "./Service";
 
-
-//Lenta apenas em dev, na release fica 10/10
-//Dá pra manter essa mesma biblioteca, sem problemas
 // Melhor forma de se resolver uma warning, ignorando ela completamente =)
 YellowBox.ignoreWarnings(["Warning: State updates"]);
 
-//to-do:
-// mudar de UID para token (?)
-// remover usuário for real (exlcuir a conta dele também)
-// pesquisar melhor sobre autentificação no firebase
-
 const ref = firestore().collection("usuarios");
-
-async function logaUsuario() {
-  const querySnapshot = await ref.get();
-  console.log("Usuários Totais:", querySnapshot.size);
-  console.log("Documentos de Usuários", querySnapshot.docs);
-}
-
-function removeUser(item) {
-  const { id, nome, email, celular, sobrenome, uid } = item;
-  Alert.alert(
-    `Remover User UID: ${uid} ?`,
-    `ID: ${id}\nNome: ${nome}\nSobrenome: ${sobrenome}\nE-mail: ${email}\nCelular: ${celular}`,
-    [
-      {
-        text: "Cancelar",
-        style: "cancel"
-      },
-      { text: "Remover", onPress: () => ref.doc(item.id).delete() }
-    ],
-    { cancelable: true }
-  );
-}
 
 const Users = () => {
   const [ID, setID] = useState("");
@@ -59,6 +31,7 @@ const Users = () => {
   const [Users, setUsers] = useState([]); // Initial empty array of Users
   const [modalAdicionar, setModalAdicionar] = useState(false);
   const [ModalEditar, setModalEditar] = useState(false);
+  const [ModalLoading, setModalLoading] = useState(false);
 
   function editaUser(item) {
     setID(item.id);
@@ -70,64 +43,118 @@ const Users = () => {
   }
 
   async function modifyUser() {
+    setModalLoading(true);
     setModalEditar(false);
-    await ref.doc(ID).set({
-      nome: Nome,
-      sobrenome: Sobrenome,
-      celular: Celular,
-      email: Email
-    });
+    await Service.modifyUser({ Nome, Sobrenome, Celular, Email, ID });
     setNome("");
     setSobrenome("");
     setCelular("");
     setEmail("");
+    setModalLoading(false);
+  }
+
+  async function removeUser(item) {
+    setModalLoading(true);
+
+    await Service.removeUser(item);
+
+    setModalLoading(false);
+  }
+
+  async function habilitar(ID) {
+    setModalLoading(true);
+
+    Service.habilita(ID);
+
+    setModalLoading(false);
+  }
+  async function removerMesmo(item) {
+    setModalLoading(true);
+
+    Service.removerMesmo(item);
+
+    setModalLoading(false);
   }
 
   function renderItem(item) {
     item = item.item;
-    return (
-      <View style={styles.UserContainer}>
-        <View style={styles.row}>
-          <Text style={styles.UserId}>ID: {item.id}</Text>
-          <TouchableOpacity onPress={() => editaUser(item)}>
-            <Text style={styles.editarButtonText}>Editar </Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => removeUser(item)}>
-            <Text style={styles.removerButtonText}>Remover</Text>
-          </TouchableOpacity>
+    if (!item.disabled) {
+      return (
+        <View style={styles.UserContainer}>
+          <View style={styles.row}>
+            <Text style={styles.UserId}>ID: {item.id}</Text>
+            <TouchableOpacity onPress={() => editaUser(item)}>
+              <Text style={styles.editarButtonText}>Editar </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => removeUser(item)}>
+              <Text style={styles.removerButtonText}>Remover</Text>
+            </TouchableOpacity>
+          </View>
+          <Text>
+            Nome: <Text style={styles.User}>{item.nome}</Text>
+          </Text>
+          <Text>
+            Sobrenome: <Text style={styles.User}>{item.sobrenome}</Text>
+          </Text>
+          <Text>
+            Celular: <Text style={styles.User}>{item.celular}</Text>
+          </Text>
+          <Text>
+            Email: <Text style={styles.User}>{item.email}</Text>
+          </Text>
+          {item.disabled && (
+            <Text>
+              Desabilitado:{" "}
+              <Text style={styles.User}>{item.disabled.toString()}</Text>
+            </Text>
+          )}
         </View>
-        <Text>
-          Nome: <Text style={styles.User}>{item.nome}</Text>
-        </Text>
-        <Text>
-          Sobrenome: <Text style={styles.User}>{item.sobrenome}</Text>
-        </Text>
-        <Text>
-          Celular: <Text style={styles.User}>{item.celular}</Text>
-        </Text>
-        <Text>
-          Email: <Text style={styles.User}>{item.email}</Text>
-        </Text>
-      </View>
-    );
+      );
+    } else {
+      return (
+        <View style={styles.UserContainerD}>
+          <View style={styles.row}>
+            <Text style={styles.UserId}>ID: {item.id}</Text>
+            <TouchableOpacity onPress={() => habilitar(item.id)}>
+              <Text style={styles.editarButtonText}>Habilitar </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => removerMesmo(item)}>
+              <Text style={styles.removerFRButtonText}>Remover</Text>
+            </TouchableOpacity>
+          </View>
+          <Text>
+            Nome: <Text style={styles.User}>{item.nome}</Text>
+          </Text>
+          <Text>
+            Sobrenome: <Text style={styles.User}>{item.sobrenome}</Text>
+          </Text>
+          <Text>
+            Celular: <Text style={styles.User}>{item.celular}</Text>
+          </Text>
+          <Text>
+            Email: <Text style={styles.User}>{item.email}</Text>
+          </Text>
+          {item.disabled && (
+            <Text>
+              Desabilitado:{" "}
+              <Text style={styles.User}>{item.disabled.toString()}</Text>
+            </Text>
+          )}
+        </View>
+      );
+    }
   }
 
   async function addUser() {
-    if (Nome != "" && Sobrenome != "") {
-      await ref.add({
-        nome: Nome,
-        sobrenome: Sobrenome,
-        celular: Celular,
-        email: Email,
-        cursosOferecidos: {},
-        favoritos: {},
-        historico: {}
-      });
+    if (Service.verifica({ Nome, Sobrenome, Email, Celular })) {
+      setModalLoading(true);
+      Service.addUser({ Nome, Sobrenome, Email, Celular });
       setNome("");
       setSobrenome("");
       setCelular("");
       setEmail("");
       closeModalAdicionar();
+      setModalLoading(false);
     }
   }
 
@@ -135,14 +162,15 @@ const Users = () => {
     return ref.onSnapshot(querySnapshot => {
       const list = [];
       querySnapshot.forEach(doc => {
-        const { nome, sobrenome, celular, email, uid } = doc.data();
+        const { nome, sobrenome, celular, email, uid, disabled } = doc.data();
         list.push({
           id: doc.id,
           uid,
           nome,
           sobrenome,
           celular,
-          email
+          email,
+          disabled
         });
         // console.log(doc.data())
       });
@@ -173,6 +201,7 @@ const Users = () => {
 
   return (
     <>
+      <MLoading ModalLoading={ModalLoading} />
       <View style={styles.container}>
         <FlatList
           contentContainerStyle={styles.list}
@@ -192,8 +221,6 @@ const Users = () => {
             onBackdropPress={closeModalAdicionar}
             height="auto"
           >
-            {/* <Input label={'Celular'} keyboardType="phone-pad" 
-          value={Celular} placeholder={"(xx)9xxxx-xxxx"} onChangeText={setCelular} /> */}
             <>
               <Input
                 label={"Nome"}
@@ -303,6 +330,14 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10
   },
+  UserContainerD: {
+    backgroundColor: "#DDD",
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  },
   UserId: {
     flex: 1,
     fontSize: 16,
@@ -317,6 +352,12 @@ const styles = StyleSheet.create({
   },
   removerButtonText: {
     fontSize: 16,
+    color: "#ff0000"
+  },
+  removerFRButtonText: {
+    fontSize: 16,
+    fontStyle: "italic",
+    fontWeight: "bold",
     color: "#ff0000"
   },
   editarButtonText: {

@@ -12,11 +12,12 @@ import {
 } from "react-native";
 import { Overlay, Input, Rating, Icon } from "react-native-elements";
 import Loading from "../../components/Loading";
+import MLoading from "../../components/ModalLoading";
 import { showMessage } from "react-native-flash-message";
 import { TextInputMask } from "react-native-masked-text";
-import * as functions from "./Service";
+import * as Service from "./Service";
 
-const ref = functions.getRef();
+const ref = Service.getRef();
 
 const cursos = () => {
   //essa porra ta muito feia, certeza que to fazendo algo de errado
@@ -39,68 +40,51 @@ const cursos = () => {
 
   async function favoritaCurso(id) {
     setModalLoading(true);
-    let arr = await functions.favoritaCurso(id, favs);
+    let arr = await Service.favoritaCurso(id, favs);
     setFavs(arr);
     setModalLoading(false);
   }
 
   async function unfavoritaCurso(id) {
     setModalLoading(true);
-    let arr = await functions.unfavoritaCurso(id, favs);
+    let arr = await Service.unfavoritaCurso(id, favs);
     setFavs(arr);
     setModalLoading(false);
   }
 
-  function showCriador(criador) {
+  async function showCriador(criador) {
     setModalLoading(true);
-
-    const pegaCriador = firestore()
-      .collection("usuarios")
-      .doc(criador);
-
-    pegaCriador
-      .get()
-      .then(function(doc) {
-        if (doc.exists) {
-          setModalLoading(false);
-          setModalVer(true);
-          const { nome, sobrenome, celular, email } = doc.data();
-          setNome(nome);
-          setSobrenome(sobrenome);
-          setCelular(celular);
-          setEmail(email);
-        } else {
-          setModalLoading(false);
-          // doc.data() will be undefined in this case
-          showMessage({
-            message: "Ocorreu um erro:",
-            description: "Criador Inexistente",
-            type: "danger",
-            duration: 2500
-          });
-        }
-      })
-      .catch(function(error) {
-        showMessage({
-          message: "Ocorreu um erro:",
-          description: error,
-          type: "danger",
-          duration: 2500
-        });
+    const doc = await Service.pegaCriador(criador);
+    if (doc) {
+      setModalVer(true);
+      const { nome, sobrenome, celular, email } = doc;
+      setNome(nome);
+      setSobrenome(sobrenome);
+      setCelular(celular);
+      setEmail(email);
+    } else {
+      // doc.data() will be undefined in this case
+      showMessage({
+        message: "Ocorreu um erro:",
+        description: "Criador Inexistente",
+        type: "danger",
+        duration: 2500
       });
+    }
+    setModalLoading(false);
   }
 
   function editaCurso(item) {
     setID(item.id);
     setCurso(item.nome);
     setDesc(item.descricao);
-    setRating(item.rating.toString());
     setPreco(item.preco);
     setModalEditar(true);
   }
 
   async function modifyCurso() {
     setModalEditar(false);
+    setModalLoading(true);
     const data = {
       ID: ID,
       Curso: Curso,
@@ -108,12 +92,13 @@ const cursos = () => {
       Desc: Desc,
       Preco: Preco
     };
-    functions.modifyCurso(data);
+    Service.modifyCurso(data);
     setCurso("");
     setDesc("");
     setRating("");
     setID("");
     setPreco("R$0,00");
+    setModalLoading(false);
   }
 
   function renderItem(item) {
@@ -151,7 +136,7 @@ const cursos = () => {
               <TouchableOpacity onPress={() => editaCurso(item)}>
                 <Text style={styles.editarButtonText}>Editar </Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => functions.removeCurso(item)}>
+              <TouchableOpacity onPress={() => Service.removeCurso(item)}>
                 <Text style={styles.removerButtonText}>Remover</Text>
               </TouchableOpacity>
             </View>
@@ -178,32 +163,27 @@ const cursos = () => {
   }
 
   async function addCurso() {
-    const user = auth().currentUser.uid;
-    setModalAdicionar(false);
-
     if (Curso && Desc) {
-      await ref
-        .add({
-          nome: Curso,
-          descricao: Desc,
-          rating: 0,
-          preco: Preco,
-          criador: user
-        })
-        .then(function(doc) {
-          firestore()
-            .collection("usuarios")
-            .doc(user)
-            .update(
-              "cursosOferecidos",
-              firestore.FieldValue.arrayUnion(doc.id)
-            );
-        });
-
+      setModalLoading(true);
+      Service.addCurso({ Curso, Desc, Preco });
       setCurso("");
       setDesc("");
       setPreco("R$0,00");
+    } else {
+      var campos = [];
+      if (!Curso) campos.push("Sobrenome");
+      if (!Desc) campos.push("Celular");
+      showMessage({
+        message: "Erro, o(s) seguinte(s) campos são obrigatórios:",
+        description: campos.toString(),
+        type: "danger",
+        icon: "danger",
+        duration: 1500
+      });
+      return;
     }
+    setModalAdicionar(false);
+    setModalLoading(false);
   }
 
   useEffect(() => {
@@ -213,7 +193,7 @@ const cursos = () => {
   }, [Preco]);
 
   useEffect(() => {
-    var user = auth().currentUser.uid;
+    const user = auth().currentUser.uid;
     firestore()
       .collection("usuarios")
       .doc(user)
@@ -265,15 +245,8 @@ const cursos = () => {
   return (
     <>
       <View style={styles.container}>
-        <Overlay
-          style={styles.load}
-          isVisible={ModalLoading}
-          windowBackgroundColor="rgba(255, 255, 255, 0)"
-          width="auto"
-          height="10%"
-        >
-          <Loading />
-        </Overlay>
+        <MLoading ModalLoading={ModalLoading} />
+
         <FlatList
           contentContainerStyle={styles.list}
           style={{ flex: 1 }}
@@ -323,12 +296,6 @@ const cursos = () => {
           <>
             <Input label={"Nome"} value={Curso} onChangeText={setCurso} />
             <Input label={"Descrição"} value={Desc} onChangeText={setDesc} />
-            <Input
-              label={"Rating"}
-              keyboardType="numeric"
-              value={Rat}
-              onChangeText={setRating}
-            />
             <Input
               label={"Preço"}
               type={"money"}

@@ -11,33 +11,13 @@ import {
   Alert
 } from "react-native";
 import { Overlay, Input, Rating, Icon } from "react-native-elements";
-import Loading from "../../../components/Loading";
 import { showMessage } from "react-native-flash-message";
 import { TextInputMask } from "react-native-masked-text";
+import Loading from "../../../components/Loading";
+import MLoading from "../../../components/ModalLoading";
+import * as Service from "./Service";
 
-const ref = firestore().collection("cursos");
-
-const logaCursos = async () => {
-  const querySnapshot = await ref.get();
-  console.log("Cursos Totais", querySnapshot.size);
-  console.log("Documentos de Cursos", querySnapshot.docs);
-};
-
-function removeCurso(item) {
-  const { nome, id, descricao, rating } = item;
-  Alert.alert(
-    "Remover Curso",
-    `ID: ${id}\nNome: ${nome}\nDescrição: ${descricao}\nRating: ${rating}`,
-    [
-      {
-        text: "Cancelar",
-        style: "cancel"
-      },
-      { text: "Remover", onPress: () => ref.doc(item.id).delete() }
-    ],
-    { cancelable: true }
-  );
-}
+const ref = Service.getRef();
 
 const cursos = () => {
   //essa porra ta muito feia, certeza que to fazendo algo de errado
@@ -59,99 +39,66 @@ const cursos = () => {
   const [favs, setFavs] = useState([]);
 
   async function favoritaCurso(id) {
-    var user = auth().currentUser.uid;
     setModalLoading(true);
-
-    if (favs.indexOf(id) == -1) {
-      await firestore()
-        .collection("usuarios")
-        .doc(user)
-        // Caso for para deixar uma referência (não sei o que muda, mas ok né)
-        //                   firestore.FieldValue.arrayUnion(firestore().doc(`cursos/${id}`)));
-        // no banco vai ficar /cursos/id_aqui
-        // acho que é pra pegar o caminho absoluto mais fácil ???
-        .update("favoritos", firestore.FieldValue.arrayUnion(`${id}`));
-      var arr = [].concat(favs);
-      arr.push(id);
-      setFavs(arr);
-    }
+    let arr = await Service.favoritaCurso(id, favs);
+    setFavs(arr);
     setModalLoading(false);
   }
 
   async function unfavoritaCurso(id) {
-    var user = auth().currentUser.uid;
     setModalLoading(true);
-    let arr = [].concat(favs);
-    arr.splice(favs.indexOf(id), 1);
+    let arr = await Service.unfavoritaCurso(id, favs);
     setFavs(arr);
-    await firestore()
-      .collection("usuarios")
-      .doc(user)
-      .update("favoritos", firestore.FieldValue.arrayRemove(id));
     setModalLoading(false);
   }
 
-  function showCriador(criador) {
+  async function showCriador(criador) {
     setModalLoading(true);
-
-    const pegaCriador = firestore()
-      .collection("usuarios")
-      .doc(criador);
-
-    pegaCriador
-      .get()
-      .then(function(doc) {
-        if (doc.exists) {
-          setModalLoading(false);
-          setModalVer(true);
-          const { nome, sobrenome, celular, email } = doc.data();
-          setNome(nome);
-          setSobrenome(sobrenome);
-          setCelular(celular);
-          setEmail(email);
-        } else {
-          setModalLoading(false);
-          // doc.data() will be undefined in this case
-          showMessage({
-            message: "Ocorreu um erro:",
-            description: "Criador Inexistente",
-            type: "danger",
-            duration: 2500
-          });
-        }
-      })
-      .catch(function(error) {
-        showMessage({
-          message: "Ocorreu um erro:",
-          description: error,
-          type: "danger",
-          duration: 2500
-        });
+    const doc = await Service.pegaCriador(criador);
+    if (doc) {
+      setModalVer(true);
+      const { nome, sobrenome, celular, email } = doc;
+      setNome(nome);
+      setSobrenome(sobrenome);
+      setCelular(celular);
+      setEmail(email);
+    } else {
+      // doc.data() will be undefined in this case
+      showMessage({
+        message: "Ocorreu um erro:",
+        description: "Criador Inexistente",
+        type: "danger",
+        duration: 2500
       });
+    }
+    setModalLoading(false);
   }
 
   function editaCurso(item) {
     setID(item.id);
     setCurso(item.nome);
     setDesc(item.descricao);
-    setRating(item.rating.toString());
     setPreco(item.preco);
     setModalEditar(true);
   }
 
   async function modifyCurso() {
     setModalEditar(false);
-    await ref.doc(ID).set({
-      nome: Curso,
-      descricao: Desc,
-      rating: parseInt(Rat),
-      preco: Preco
-    });
+    setModalLoading(true);
+    const data = {
+      ID: ID,
+      Curso: Curso,
+      Rat: Rat,
+      Desc: Desc,
+      Preco: Preco
+    };
+    Service.modifyCurso(data);
     setCurso("");
     setDesc("");
     setRating("");
     setID("");
     setPreco("R$0,00");
+    setModalLoading(false);
   }
 
   function renderItem(item) {
@@ -210,31 +157,27 @@ const cursos = () => {
   }
 
   async function addCurso() {
-    var user = auth().currentUser.uid;
-    setModalAdicionar(false);
-    if (Curso != "" && Desc != "") {
-      await ref
-        .add({
-          nome: Curso,
-          descricao: Desc,
-          rating: 0,
-          preco: Preco,
-          criador: user
-        })
-        .then(function(doc) {
-          firestore()
-            .collection("usuarios")
-            .doc(user)
-            .update(
-              "cursosOferecidos",
-              firestore.FieldValue.arrayUnion(doc.id)
-            );
-        });
-
+    if (Curso && Desc) {
+      setModalLoading(true);
+      Service.addCurso({ Curso, Desc, Preco });
       setCurso("");
       setDesc("");
       setPreco("R$0,00");
+    } else {
+      var campos = [];
+      if (!Curso) campos.push("Sobrenome");
+      if (!Desc) campos.push("Celular");
+      showMessage({
+        message: "Erro, o(s) seguinte(s) campos são obrigatórios:",
+        description: campos.toString(),
+        type: "danger",
+        icon: "danger",
+        duration: 1500
+      });
+      return;
     }
+    setModalAdicionar(false);
+    setModalLoading(false);
   }
 
   useEffect(() => {
@@ -296,15 +239,8 @@ const cursos = () => {
   return (
     <>
       <View style={styles.container}>
-        <Overlay
-          style={styles.load}
-          isVisible={ModalLoading}
-          windowBackgroundColor="rgba(255, 255, 255, 0)"
-          width="auto"
-          height="10%"
-        >
-          <Loading />
-        </Overlay>
+        <MLoading ModalLoading={ModalLoading} />
+
         <FlatList
           contentContainerStyle={styles.list}
           style={{ flex: 1 }}
