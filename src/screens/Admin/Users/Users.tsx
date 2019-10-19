@@ -12,7 +12,8 @@ import {
 } from "react-native";
 import { Overlay, Input } from "react-native-elements";
 import { TextInputMask } from "react-native-masked-text";
-import Loading from "./Loading";
+import Loading from "../../../components/Loading";
+
 
 //Lenta apenas em dev, na release fica 10/10
 //Dá pra manter essa mesma biblioteca, sem problemas

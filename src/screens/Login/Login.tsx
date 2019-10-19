@@ -14,7 +14,7 @@ import {
 YellowBox.ignoreWarnings(["Warning: State updates"]);
 
 import auth from "@react-native-firebase/auth";
-import Loading from "./Loading";
+import Loading from "../../components/Loading";
 // import { Container } from './styles';
 const ref = firestore().collection("usuarios");
 
@@ -151,7 +151,7 @@ const Login = () => {
   async function senha() {
     if (!Email) {
       showMessage({
-        message: "Email em branco!",
+        message: "Digite o seu E-mail acima",
         type: "danger",
         icon: "danger",
         duration: 2500
@@ -159,6 +159,7 @@ const Login = () => {
       return;
     }
     try {
+      setModalLoading(true);
       await auth().sendPasswordResetEmail(Email);
       showMessage({
         message: "Email enviado com sucesso!",
@@ -169,6 +170,7 @@ const Login = () => {
     } catch (e) {
       catchErros(e);
     }
+    setModalLoading(false);
     return;
   }
 
@@ -232,6 +234,7 @@ const Login = () => {
             onChangeText={setSobrenome}
           />
           <Input
+            keyboardType="phone-pad"
             label={"Celular"}
             type={"cel-phone"}
             options={{
@@ -248,7 +251,6 @@ const Login = () => {
             keyboardType="email-address"
             autoCapitalize="none"
             autoCompleteType="email"
-            inputContainerStyle={styles.input}
             style={styles.input}
             value={Email}
             onChangeText={setEmail}
@@ -261,7 +263,6 @@ const Login = () => {
             textContentType="password"
             autoCompleteType="password"
             autoCapitalize="none"
-            inputContainerStyle={styles.input2}
             value={Senha}
             onChangeText={setSenha}
             label={"Senha"}
@@ -276,7 +277,7 @@ const Login = () => {
           </Button>
         </KeyboardAwareScrollView>
       </Overlay>
-      <View style={styles.input}>
+      <View style={styles.contInput}>
         <Input
           keyboardType="email-address"
           autoCapitalize="none"
@@ -285,7 +286,7 @@ const Login = () => {
           style={styles.input}
           value={Email}
           onChangeText={setEmail}
-          label={"E-mail"}
+          label={"    E-mail"}
           leftIcon={{ type: "font-awesome", name: "envelope" }}
           placeholder={"email@endereco.com.br"}
         ></Input>
@@ -294,13 +295,22 @@ const Login = () => {
           textContentType="password"
           autoCompleteType="password"
           autoCapitalize="none"
-          inputContainerStyle={styles.input2}
+          inputContainerStyle={styles.input}
           value={Senha}
           onChangeText={setSenha}
-          label={"Senha"}
+          label={"    Senha"}
           leftIcon={{ type: "font-awesome", name: "lock" }}
-          placeholder={"senha"}
+          placeholder={"************"}
         ></Input>
+
+        <Button
+          style={styles.senha}
+          icon="lock"
+          color="#000"
+          onPress={() => senha()}
+        >
+          Esqueceu a senha?
+        </Button>
       </View>
       <View
         style={{
@@ -309,18 +319,11 @@ const Login = () => {
           alignItems: "flex-start"
         }}
       >
-        <Button style={styles.senha} color="#000" onPress={() => senha()}>
-          Esqueceu a senha?
-        </Button>
         <Button style={styles.login} color="#000" onPress={() => login()}>
           Login
         </Button>
       </View>
 
-      <Button style={styles.touch} onPress={openmodalCadastro} mode="contained">
-        Ainda não é cadastrado? Registre-se
-      </Button>
-      <Text>Ou faça login como uma das opções abaixo</Text>
       <GoogleSigninButton
         style={{ width: 312, height: 48 }}
         size={GoogleSigninButton.Size.Wide}
@@ -328,6 +331,14 @@ const Login = () => {
         onPress={loginGoogle}
         disabled={isSigninInProgress}
       />
+      <Button
+        style={styles.touch}
+        color="#fff"
+        onPress={openmodalCadastro}
+        mode="text"
+      >
+        Ainda não é cadastrado? Registre-se
+      </Button>
     </View>
   );
 };
@@ -335,17 +346,18 @@ const Login = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignContent: "center",
-    justifyContent: "center",
+    top: 50,
+    alignContent: "flex-start",
+    justifyContent: "flex-start",
     alignItems: "center"
   },
   input: {
     backgroundColor: "#ffffff",
-    width: "100%",
-    height: "auto"
+    borderRadius: 20,
+    borderColor: "#ddd",
+    borderWidth: 1
   },
-  input2: {
-    backgroundColor: "#ffffff",
+  contInput: {
     width: "100%",
     height: "auto",
     marginBottom: 15
@@ -355,16 +367,17 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   senha: {
-    backgroundColor: "#7986CB",
-    marginTop: 10
+    width: "auto",
+    height: "auto",
+    alignSelf: "flex-end"
   },
   login: {
     backgroundColor: "#7986CB",
-    marginTop: 10
+    marginBottom: 10
   },
   touch: {
-    margin: 10,
-    backgroundColor: "#1DE9B6"
+    bottom: 50,
+    position: "absolute"
   },
   row: {
     flex: 1,

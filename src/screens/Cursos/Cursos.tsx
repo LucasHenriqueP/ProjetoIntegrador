@@ -11,33 +11,12 @@ import {
   Alert
 } from "react-native";
 import { Overlay, Input, Rating, Icon } from "react-native-elements";
-import Loading from "./Loading";
+import Loading from "../../components/Loading";
 import { showMessage } from "react-native-flash-message";
 import { TextInputMask } from "react-native-masked-text";
+import * as functions from "./Service";
 
-const ref = firestore().collection("cursos");
-
-const logaCursos = async () => {
-  const querySnapshot = await ref.get();
-  console.log("Cursos Totais", querySnapshot.size);
-  console.log("Documentos de Cursos", querySnapshot.docs);
-};
-
-function removeCurso(item) {
-  const { nome, id, descricao, rating } = item;
-  Alert.alert(
-    "Remover Curso",
-    `ID: ${id}\nNome: ${nome}\nDescrição: ${descricao}\nRating: ${rating}`,
-    [
-      {
-        text: "Cancelar",
-        style: "cancel"
-      },
-      { text: "Remover", onPress: () => ref.doc(item.id).delete() }
-    ],
-    { cancelable: true }
-  );
-}
+const ref = functions.getRef();
 
 const cursos = () => {
   //essa porra ta muito feia, certeza que to fazendo algo de errado
@@ -59,35 +38,16 @@ const cursos = () => {
   const [favs, setFavs] = useState([]);
 
   async function favoritaCurso(id) {
-    var user = auth().currentUser.uid;
     setModalLoading(true);
-
-    if (favs.indexOf(id) == -1) {
-      await firestore()
-        .collection("usuarios")
-        .doc(user)
-        // Caso for para deixar uma referência (não sei o que muda, mas ok né)
-        //                   firestore.FieldValue.arrayUnion(firestore().doc(`cursos/${id}`)));
-        // no banco vai ficar /cursos/id_aqui
-        // acho que é pra pegar o caminho absoluto mais fácil ???
-        .update("favoritos", firestore.FieldValue.arrayUnion(`${id}`));
-      var arr = [].concat(favs);
-      arr.push(id);
-      setFavs(arr);
-    }
+    let arr = await functions.favoritaCurso(id, favs);
+    setFavs(arr);
     setModalLoading(false);
   }
 
   async function unfavoritaCurso(id) {
-    var user = auth().currentUser.uid;
     setModalLoading(true);
-    let arr = [].concat(favs);
-    arr.splice(favs.indexOf(id), 1);
+    let arr = await functions.unfavoritaCurso(id, favs);
     setFavs(arr);
-    await firestore()
-      .collection("usuarios")
-      .doc(user)
-      .update("favoritos", firestore.FieldValue.arrayRemove(id));
     setModalLoading(false);
   }
 
@@ -141,12 +101,14 @@ const cursos = () => {
 
   async function modifyCurso() {
     setModalEditar(false);
-    await ref.doc(ID).set({
-      nome: Curso,
-      descricao: Desc,
-      rating: parseInt(Rat),
-      preco: Preco
-    });
+    const data = {
+      ID: ID,
+      Curso: Curso,
+      Rat: Rat,
+      Desc: Desc,
+      Preco: Preco
+    };
+    functions.modifyCurso(data);
     setCurso("");
     setDesc("");
     setRating("");
@@ -189,7 +151,7 @@ const cursos = () => {
               <TouchableOpacity onPress={() => editaCurso(item)}>
                 <Text style={styles.editarButtonText}>Editar </Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => removeCurso(item)}>
+              <TouchableOpacity onPress={() => functions.removeCurso(item)}>
                 <Text style={styles.removerButtonText}>Remover</Text>
               </TouchableOpacity>
             </View>
@@ -216,9 +178,10 @@ const cursos = () => {
   }
 
   async function addCurso() {
-    var user = auth().currentUser.uid;
+    const user = auth().currentUser.uid;
     setModalAdicionar(false);
-    if (Curso != "" && Desc != "") {
+
+    if (Curso && Desc) {
       await ref
         .add({
           nome: Curso,

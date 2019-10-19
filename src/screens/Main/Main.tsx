@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
-import Background from "./Background";
-import Login from "./Login";
+import Background from "../../components/Background";
+import Login from "../Login/Login";
 import auth from "@react-native-firebase/auth";
-import Loading from "./Loading";
+import Loading from "../../components/Loading";
 import { showMessage } from "react-native-flash-message";
 import { Overlay } from "react-native-elements";
 
@@ -119,6 +119,22 @@ const Page1 = ({ navigation }) => {
           onPress={() => navigation.navigate("Users")}
         >
           Usuários
+        </Button>
+
+        <Button
+          style={{ margin: 5 }}
+          mode="contained"
+          onPress={() => navigation.navigate("CursosADM")}
+        >
+          CursosADM
+        </Button>
+
+        <Button
+          style={{ margin: 5 }}
+          mode="contained"
+          onPress={() => navigation.navigate("UsersADM")}
+        >
+          UsuáriosADM
         </Button>
         <Button onPress={() => auth().signOut()}>Sair</Button>
       </View>
