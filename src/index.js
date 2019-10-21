@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import FlashMessage from "react-native-flash-message";
-import Routes from "./routes";
+import Routes from "./config/routes";
 import "./config/StatusBarConfig";
 
 export default class App extends React.Component {

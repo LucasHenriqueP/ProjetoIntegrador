@@ -1,12 +1,13 @@
+import auth from "@react-native-firebase/auth";
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
+import { showMessage } from "react-native-flash-message";
+
 import Background from "../../components/Background";
 import Login from "../Login/Login";
-import auth from "@react-native-firebase/auth";
 import Loading from "../../components/Loading";
-import { showMessage } from "react-native-flash-message";
-import { Overlay } from "react-native-elements";
+import MLoading from "../../components/ModalLoading";
 import * as Service from "./Service";
 
 const Page1 = ({ navigation }) => {
@@ -47,7 +48,7 @@ const Page1 = ({ navigation }) => {
   if (loading) return <Loading />;
 
   if (!user) {
-    return <Login />;
+    return <Login navigation={navigation} />;
   }
 
   async function sendEmail() {
@@ -59,15 +60,7 @@ const Page1 = ({ navigation }) => {
 
   return (
     <Background>
-      <Overlay
-        style={styles.load}
-        isVisible={ModalLoading}
-        windowBackgroundColor="rgba(255, 255, 255, 0)"
-        width="auto"
-        height="10%"
-      >
-        <Loading />
-      </Overlay>
+      <MLoading ModalLoading={ModalLoading} />
       <View style={styles.auth}>
         {!auth().currentUser.emailVerified && (
           <View style={styles.topcenter}>

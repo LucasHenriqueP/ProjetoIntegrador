@@ -141,5 +141,6 @@ export async function removerMesmo(item) {
           doc.ref.delete();
         });
       });
+    auth().currentUser.delete();
   }
 }

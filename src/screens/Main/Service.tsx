@@ -23,5 +23,5 @@ export async function sendEmail() {
 }
 
 export async function sair() {
-  auth().signOut();
+  await auth().signOut();
 }

@@ -26,7 +26,7 @@ const cursos = () => {
   const [Preco, setPreco] = useState("R$0,00");
   const [Desc, setDesc] = useState("");
   const [Rat, setRating] = useState("");
-  const [loading, setLoading] = useState(true); // Set loading to true on component mount
+  const [loading, setLoading] = useState(false); // Set loading to true on component mount
   const [Cursos, setCursos] = useState([]); // Initial empty array of Cursos
   const [ModalAdicionar, setModalAdicionar] = useState(false);
   const [ModalEditar, setModalEditar] = useState(false);
@@ -193,6 +193,7 @@ const cursos = () => {
   }, [Preco]);
 
   useEffect(() => {
+    setModalLoading(true);
     const user = auth().currentUser.uid;
     firestore()
       .collection("usuarios")
@@ -201,6 +202,7 @@ const cursos = () => {
       .then(function(doc) {
         const { favoritos } = doc.data();
         setFavs(favoritos.toString());
+        setModalLoading(false);
       });
     return ref.onSnapshot(querySnapshot => {
       const list = [];
