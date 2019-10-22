@@ -3,6 +3,7 @@ import auth from "@react-native-firebase/auth";
 import { Alert } from "react-native";
 import { showMessage } from "react-native-flash-message";
 
+
 const ref = firestore().collection("cursos");
 
 export function getRef() {

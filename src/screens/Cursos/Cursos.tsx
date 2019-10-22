@@ -31,7 +31,7 @@ const cursos = () => {
   const [ModalAdicionar, setModalAdicionar] = useState(false);
   const [ModalEditar, setModalEditar] = useState(false);
   const [ModalVer, setModalVer] = useState(false);
-  const [ModalLoading, setModalLoading] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
   const [Nome, setNome] = useState("");
   const [Sobrenome, setSobrenome] = useState("");
   const [Celular, setCelular] = useState("");
@@ -113,7 +113,7 @@ const cursos = () => {
             favs.indexOf(item.id) !== -1 && (
               <TouchableOpacity onPress={() => unfavoritaCurso(item.id)}>
                 <Icon
-                  style={styles.editarButtonText}
+                  style={{color: "red"}}
                   name="star"
                   type="font-awesome"
                 />
@@ -221,6 +221,7 @@ const cursos = () => {
       if (loading) {
         setLoading(false);
       }
+      setModalLoading(false);
     });
   }, []);
 
@@ -247,7 +248,7 @@ const cursos = () => {
   return (
     <>
       <View style={styles.container}>
-        <MLoading ModalLoading={ModalLoading} />
+        <MLoading ModalLoading={modalLoading} />
 
         <FlatList
           contentContainerStyle={styles.list}
@@ -388,6 +389,9 @@ const styles = StyleSheet.create({
   editarButtonText: {
     fontSize: 16,
     color: "#202a31"
+  },
+  iconStar:{
+    color: "#ffff1c"
   },
   row: {
     flex: 1,

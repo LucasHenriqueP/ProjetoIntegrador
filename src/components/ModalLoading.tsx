@@ -5,6 +5,7 @@ import Loading from "./Loading";
 
 const MLoading = props => {
   return (
+    props.ModalLoading?
     <View style={styles.load}>
       <Overlay
         isVisible={props.ModalLoading}
@@ -15,6 +16,7 @@ const MLoading = props => {
         <Loading />
       </Overlay>
     </View>
+    : null
   );
 };
 export default MLoading;

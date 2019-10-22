@@ -5,7 +5,7 @@ import { createStackNavigator } from "react-navigation-stack";
 import { createDrawerNavigator } from "react-navigation-drawer";
 import IOSIcon from "react-native-vector-icons/Ionicons";
 
-import Example from "./Example";
+//import Example from "./Example";
 import SideMenu from "../components/SideMenu";
 import Main from "../screens/Main/Main";
 import Cursos from "../screens/Cursos/Cursos";
@@ -103,12 +103,14 @@ const SettingsStack = createStackNavigator(
         }
       })
     },
+    /*
     Perfil: {
       screen: Example,
       navigationOptions: {
         headerTitle: "Perfil"
       }
     }
+    */
   },
   { headerLayoutPreset: "center" }
 );
