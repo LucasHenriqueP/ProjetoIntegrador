@@ -16,6 +16,15 @@ const Registrar = ({ navigation }) => {
   const [Email, setEmail] = useState("");
   const [Senha, setSenha] = useState("");
 
+  if (navigation.getParam("givenName")) {
+    setNome(navigation.getParam("givenName"));
+    setEmail(navigation.getParam("email"));
+    setSobrenome(navigation.getParam("familyName"));
+    console.log("entro");
+  } else {
+    console.log(navigation.getParam("givenName"));
+  }
+
   async function registrar() {
     const verifica = Service.verifica({
       Email,

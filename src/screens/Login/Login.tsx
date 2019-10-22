@@ -11,7 +11,8 @@ import { Input } from "react-native-elements";
 import { showMessage, hideMessage } from "react-native-flash-message";
 import {
   GoogleSignin,
-  GoogleSigninButton
+  GoogleSigninButton,
+  statusCodes
 } from "@react-native-community/google-signin";
 
 YellowBox.ignoreWarnings(["Warning: State updates"]);
@@ -27,9 +28,30 @@ const Login = ({ navigation }) => {
   const [isSigninInProgress, setIsSigninInProgress] = useState(false);
   const [ModalLoading, setModalLoading] = useState(false);
 
-  function loginGoogle() {
-    return;
-  }
+  GoogleSignin.configure({
+    webClientId:
+      "832067946495-9vgi9uomr5pr2kh3fsjn1oi376a2nosm.apps.googleusercontent.com" // client ID of type WEB for your server (needed to verify user ID and offline access)
+    //offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+  });
+  const signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      navigation.navigate("Registrar", userInfo.user);
+
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        return;
+        // user cancelled the login flow
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // operation (e.g. sign in) is in progress already
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // play services not available or outdated
+      } else {
+        // some other error happened
+      }
+    }
+  };
 
   function loginFace() {
     return;
@@ -120,7 +142,7 @@ const Login = ({ navigation }) => {
         style={{ width: 312, height: 48 }}
         size={GoogleSigninButton.Size.Wide}
         color={GoogleSigninButton.Color.Dark}
-        onPress={loginGoogle}
+        onPress={signIn}
         disabled={isSigninInProgress}
       />
       <Button
