@@ -55,7 +55,7 @@ const Users = () => {
 
   async function removeUser(item) {
     setModalLoading(true);
-
+    // await GoogleSignin.revokeAccess();
     await Service.removeUser(item);
 
     setModalLoading(false);

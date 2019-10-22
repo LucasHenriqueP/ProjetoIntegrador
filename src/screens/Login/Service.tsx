@@ -58,6 +58,29 @@ export function catchErros(e) {
   }
 }
 
+export function verificaGoogle(Celular) {
+  if (!Celular) {
+    showMessage({
+      message: "Erro, O número de celular é obrigatório:",
+      type: "danger",
+      icon: "danger",
+      duration: 1500
+    });
+    return false;
+  }
+
+  if (Celular.toString().length != 15) {
+    showMessage({
+      message: "Erro, celular inválido",
+      type: "danger",
+      icon: "danger",
+      duration: 1500
+    });
+    return false;
+  }
+  return true;
+}
+
 export function verifica(data) {
   const { Email, Senha, Nome, Sobrenome, Celular } = data;
   if (!Email || !Senha || !Nome || !Sobrenome || !Celular) {

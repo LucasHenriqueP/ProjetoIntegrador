@@ -9,10 +9,15 @@ import {
 } from "react-native";
 import { Button } from "react-native-paper";
 import IOSIcon from "react-native-vector-icons/Ionicons";
+import { GoogleSignin } from "@react-native-community/google-signin";
 
 const SideMenu = ({ navigation }) => {
   async function sair() {
-    await auth().signOut();
+    if (GoogleSignin.isSignedIn) {
+      await GoogleSignin.signOut();
+    } else {
+      await auth().signOut();
+    }
     navigation.navigate("Landing");
   }
   return (

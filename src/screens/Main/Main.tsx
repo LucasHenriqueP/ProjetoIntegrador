@@ -9,11 +9,18 @@ import Login from "../Login/Login";
 import Loading from "../../components/Loading";
 import MLoading from "../../components/ModalLoading";
 import * as Service from "./Service";
+import verificaLogin from "../../utils/verificaLogin";
+import {
+  GoogleSignin,
+  statusCodes
+} from "@react-native-community/google-signin";
 
 const Page1 = ({ navigation }) => {
   // Set an loading state whilst Firebase connects
   const [loading, setLoading] = useState(true);
+  //transferir para service e verificar, mudar toda a estrutura
   const [user, setUser] = useState(false);
+  const [Google, setGoogle] = useState(false);
   const [email, setEmail] = useState(false);
   const [ModalLoading, setModalLoading] = useState(false);
 
@@ -32,8 +39,9 @@ const Page1 = ({ navigation }) => {
   }
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    if (user && !auth().currentUser.emailVerified && !email) {
+    var subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+
+    if (user && !auth().currentUser.emailVerified && !email && !Google) {
       showMessage({
         message: "Não esqueça de verificar o seu email!",
         description: "Depois disso, é necessário relogar",
@@ -47,7 +55,7 @@ const Page1 = ({ navigation }) => {
 
   if (loading) return <Loading />;
 
-  if (!user) {
+  if (!verificaLogin()) {
     return <Login navigation={navigation} />;
   }
 
@@ -62,7 +70,7 @@ const Page1 = ({ navigation }) => {
     <Background>
       <MLoading ModalLoading={ModalLoading} />
       <View style={styles.auth}>
-        {!auth().currentUser.emailVerified && (
+        {user && !auth().currentUser.emailVerified && (
           <View style={styles.topcenter}>
             <Text>Enviamos um link de ativação para o seu e-mail</Text>
             <TouchableOpacity onPress={() => sendEmail()} style={styles.touch}>
