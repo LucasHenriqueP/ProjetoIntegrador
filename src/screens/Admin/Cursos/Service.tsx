@@ -62,7 +62,7 @@ export async function favoritaCurso(id, favs) {
 
 export async function unfavoritaCurso(id, favs) {
   const user = auth().currentUser.uid;
-  var arr = favs;
+  var arr = [].concat(favs);
   arr.splice(favs.indexOf(id), 1);
   await firestore()
     .collection("usuarios")

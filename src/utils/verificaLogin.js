@@ -4,25 +4,34 @@ import {
   statusCodes
 } from "@react-native-community/google-signin";
 
-export default async function verificaLogin() {
+export async function verificaLogin() {
+  auth().onAuthStateChanged(onAuthStateChanged);
+
   function onAuthStateChanged(user) {
     if (user) {
-      return true;
+      console.log("1");
+      return Promise.resolve();
     }
-    return false;
+    console.log("2");
+    return Promise.reject("erro");
   }
 
-  var userGoogle = GoogleSignin.signInSilently().catch(error => {
-    if (error.code === statusCodes.IN_PROGRESS) {
-      return true;
-    } else if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-      return false;
+  await GoogleSignin.isSignedIn().then(user => {
+    if (user) {
+      console.log("3");
+      return Promise.resolve();
     }
+    console.log("4");
+    return Promise.reject("erro");
   });
 
-  var userFire = auth().onAuthStateChanged(onAuthStateChanged);
-  if (userFire) return true;
-  if (userGoogle) return true;
-
   // TO-DO Facebook
+}
+
+export async function userVerified() {
+  var user = auth().currentUser.emailVerified;
+  if (user) {
+    return true;
+  }
+  return false;
 }

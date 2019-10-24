@@ -14,11 +14,13 @@ import { GoogleSignin } from "@react-native-community/google-signin";
 const SideMenu = ({ navigation }) => {
   async function sair() {
     if (GoogleSignin.isSignedIn) {
-      await GoogleSignin.signOut();
+      await GoogleSignin.signOut().then(() => {
+        navigation.navigate("Landing");
+      });
     } else {
       await auth().signOut();
+      navigation.navigate("Landing");
     }
-    navigation.navigate("Landing");
   }
   return (
     <View style={styles.container}>

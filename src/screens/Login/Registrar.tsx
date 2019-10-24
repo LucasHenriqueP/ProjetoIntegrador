@@ -8,7 +8,6 @@ import { TextInputMask } from "react-native-masked-text";
 import Loading from "../../components/Loading";
 import * as Service from "./Service";
 import { showMessage } from "react-native-flash-message";
-import { GoogleSignin } from "@react-native-community/google-signin";
 
 const Registrar = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
@@ -51,7 +50,7 @@ const Registrar = ({ navigation }) => {
 
           const ID = userInfo.user.uid;
           await Service.criaUser({ ID, Email, Nome, Sobrenome, Celular });
-
+          await Service.sendEmail();
           setNome("");
           setSobrenome("");
           setCelular("");

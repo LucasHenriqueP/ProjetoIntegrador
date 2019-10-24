@@ -9,11 +9,7 @@ import Login from "../Login/Login";
 import Loading from "../../components/Loading";
 import MLoading from "../../components/ModalLoading";
 import * as Service from "./Service";
-import verificaLogin from "../../utils/verificaLogin";
-import {
-  GoogleSignin,
-  statusCodes
-} from "@react-native-community/google-signin";
+import * as Verify from "../../utils/verificaLogin";
 
 const Page1 = ({ navigation }) => {
   // Set an loading state whilst Firebase connects
@@ -28,7 +24,7 @@ const Page1 = ({ navigation }) => {
   function onAuthStateChanged(user) {
     setUser(user);
     if (loading) setLoading(false);
-    if (user && auth().currentUser.emailVerified) {
+    if (user && Verify.userVerified()) {
       showMessage({
         message: "Autenticado com sucesso!",
         type: "success",
@@ -41,7 +37,7 @@ const Page1 = ({ navigation }) => {
   useEffect(() => {
     var subscriber = auth().onAuthStateChanged(onAuthStateChanged);
 
-    if (user && !auth().currentUser.emailVerified && !email && !Google) {
+    if (user && !Verify.userVerified() && !email && !Google) {
       showMessage({
         message: "Não esqueça de verificar o seu email!",
         description: "Depois disso, é necessário relogar",
@@ -55,7 +51,7 @@ const Page1 = ({ navigation }) => {
 
   if (loading) return <Loading />;
 
-  if (!verificaLogin()) {
+  if (!Verify.verificaLogin()) {
     return <Login navigation={navigation} />;
   }
 
@@ -110,7 +106,6 @@ const Page1 = ({ navigation }) => {
         >
           UsuáriosADM
         </Button>
-        <Button onPress={() => Service.sair()}>Sair</Button>
       </View>
     </Background>
   );

@@ -14,12 +14,13 @@ import {
   GoogleSigninButton,
   statusCodes
 } from "@react-native-community/google-signin";
-import verificaLogin from "../../utils/verificaLogin";
+import * as Verify from "../../utils/verificaLogin";
 
 YellowBox.ignoreWarnings(["Warning: State updates"]);
 
 import auth from "@react-native-firebase/auth";
 import Loading from "../../components/Loading";
+import firestore from "@react-native-firebase/firestore";
 import MLoading from "../../components/ModalLoading";
 import * as Service from "./Service";
 
@@ -39,13 +40,23 @@ const Login = ({ navigation }) => {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      console.log(GoogleSignin.getCurrentUser());
-      navigation.navigate("Registrar", userInfo.user);
+      GoogleSignin.getCurrentUser().then(async user => {
+        // REFATORAR DEPOIS
+        // Depois de logar com o usuário pelo google, verifica se ele já existe
+        //se não existir a gente manda ele se registrar
+        const querySnapshot = await firestore()
+          .collection("usuarios")
+          .get();
+          console.log(user.user.id);
+        querySnapshot.forEach(doc => {
+          if (doc.id == user.user.id) {
+            navigation.navigate("Main");
+          }
+        });
+        navigation.navigate("Registrar", userInfo.user);
+      });
     } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        return;
-        // user cancelled the login flow
-      }
+      console.log(error);
     }
   };
 
@@ -53,14 +64,15 @@ const Login = ({ navigation }) => {
     return;
   }
 
-  function onAuthStateChanged(user) {
-    if (verificaLogin()) {
-      navigation.navigate("Main");
-    }
-  }
-
   useEffect(() => {
-    auth().onAuthStateChanged(onAuthStateChanged);
+    Verify.verificaLogin()
+      .then(() => {
+        console.log("aa")
+        navigation.navigate("Main");
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }, []);
 
   async function entrar() {

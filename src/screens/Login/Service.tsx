@@ -151,7 +151,9 @@ export async function criaUser(data) {
     .catch(e => {
       throw e;
     });
+}
 
+export async function sendEmail() {
   auth()
     .currentUser.sendEmailVerification()
     .catch(e => {
