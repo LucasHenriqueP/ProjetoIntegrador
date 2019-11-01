@@ -13,13 +13,15 @@ import { GoogleSignin } from "@react-native-community/google-signin";
 
 const SideMenu = ({ navigation }) => {
   async function sair() {
-    if (GoogleSignin.isSignedIn) {
-      await GoogleSignin.signOut().then(() => {
-        navigation.navigate("Landing");
-      });
-    } else {
+    if (auth().currentUser) {
       await auth().signOut();
       navigation.navigate("Landing");
+      console.log("a")
+    }
+    if (GoogleSignin.isSignedIn) {
+      await GoogleSignin.signOut();
+      navigation.navigate("Landing");
+      console.log("b")
     }
   }
   return (
@@ -51,7 +53,7 @@ const SideMenu = ({ navigation }) => {
         </View>
       </ScrollView>
       <View style={styles.footerContainer}>
-        <Button onPress={() => sair()}>Sair</Button>
+        <Button onPress={async () => await sair()}>SAAAAAAAAAAI</Button>
       </View>
     </View>
   );

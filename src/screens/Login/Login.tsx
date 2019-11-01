@@ -47,7 +47,6 @@ const Login = ({ navigation }) => {
         const querySnapshot = await firestore()
           .collection("usuarios")
           .get();
-          console.log(user.user.id);
         querySnapshot.forEach(doc => {
           if (doc.id == user.user.id) {
             navigation.navigate("Main");
@@ -64,15 +63,36 @@ const Login = ({ navigation }) => {
     return;
   }
 
+  const getCurrentUserInfo = async () => {
+    try {
+      const userInfo = await GoogleSignin.signInSilently();
+      return userInfo;
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+        return false;
+      } else {
+        console.log("erro2");
+        return false;
+        // some other error
+      }
+    }
+  };
+
   useEffect(() => {
-    Verify.verificaLogin()
-      .then(() => {
-        console.log("aa")
-        navigation.navigate("Main");
+    getCurrentUserInfo()
+      .then(user => {
+        if (user) {
+          navigation.navigate("Main");
+        }
       })
-      .catch(error => {
-        console.log(error);
+      .catch(() => {
+        console.log("num foi2");
       });
+    Verify.verificaLogin().then(user => {
+      if (user) {
+        navigation.navigate("Main");
+      }
+    });
   }, []);
 
   async function entrar() {
