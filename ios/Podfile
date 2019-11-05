@@ -30,6 +30,8 @@ target 'uCursos' do
 
 
 
+  pod 'react-native-onesignal', :path => '../node_modules/react-native-onesignal'
+
   target 'uCursosTests' do
     inherit! :search_paths
     # Pods for testing

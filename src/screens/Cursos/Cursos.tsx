@@ -45,6 +45,7 @@ const cursos = () => {
     setModalLoading(false);
   }
 
+  
   async function unfavoritaCurso(id) {
     setModalLoading(true);
     let arr = await Service.unfavoritaCurso(id, favs);

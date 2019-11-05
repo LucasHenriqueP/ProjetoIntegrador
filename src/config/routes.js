@@ -10,6 +10,7 @@ import SideMenu from "../components/SideMenu";
 import Main from "../screens/Main/Main";
 import Cursos from "../screens/Cursos/Cursos";
 import Users from "../screens/Users/Users";
+import User from "../screens/User/User";
 import CursosADM from "../screens/Admin/Cursos/Cursos";
 import UsersADM from "../screens/Admin/Users/Users";
 import Login from "../screens/Login/Login";
@@ -103,14 +104,14 @@ const SettingsStack = createStackNavigator(
         }
       })
     },
-    /*
-    Perfil: {
-      screen: Example,
+    
+    User: {
+      screen: User,
       navigationOptions: {
         headerTitle: "Perfil"
       }
     }
-    */
+    
   },
   { headerLayoutPreset: "center" }
 );

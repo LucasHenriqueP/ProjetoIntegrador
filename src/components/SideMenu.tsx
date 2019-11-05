@@ -39,7 +39,7 @@ const SideMenu = ({ navigation }) => {
           <View>
             <Button
               style={styles.navItemStyle}
-              onPress={() => navigation.navigate("Main")}
+              onPress={() => navigation.navigate("User")}
             >
               Perfil
             </Button>
