@@ -953,6 +953,11 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
+"@react-native-community/async-storage@^1.6.2":
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/async-storage/-/async-storage-1.6.2.tgz#a19ca7149c4dfe8216f2330e6b1ebfe2d075ef92"
+  integrity sha512-EJGsbrHubK1mGxPjWB74AaHAd5m9I+Gg2RRPZzMK6org7QOU9WOBnIMFqoeVto3hKOaEPlk8NV74H6G34/2pZQ==
+
 "@react-native-community/blur@^3.3.1":
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/@react-native-community/blur/-/blur-3.3.1.tgz#bc9ecd6d85d89739d8180138716535ac7cfa4680"
@@ -3781,7 +3786,7 @@ inquirer@^7.0.0:
     strip-ansi "^5.1.0"
     through "^2.3.6"
 
-invariant@^2.2.2, invariant@^2.2.4:
+invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.4.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
@@ -6387,13 +6392,6 @@ react-native-masked-text@^1.13.0:
   dependencies:
     date-and-time "0.9.0"
     tinymask "1.0.2"
-
-react-native-onesignal@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-onesignal/-/react-native-onesignal-3.5.0.tgz#7f4ab2fae32c52fc1a5f34efdba6bbb53d04e6bb"
-  integrity sha512-Ww2d1na7SOpZ0DEVb+8BGpTt5Ty0Nuak/YqjY3YCauHFBdNOdI7Cz5CtSWLJMjKiyniJmWWHkvLu6HDE9zGZng==
-  dependencies:
-    invariant "^2.2.2"
 
 react-native-paper@^2.16.0:
   version "2.16.0"

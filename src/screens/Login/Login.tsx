@@ -14,6 +14,7 @@ import {
   GoogleSigninButton,
   statusCodes
 } from "@react-native-community/google-signin";
+import AsyncStorage from "@react-native-community/async-storage";
 import * as Verify from "../../utils/verificaLogin";
 
 YellowBox.ignoreWarnings(["Warning: State updates"]);
@@ -41,15 +42,21 @@ const Login = ({ navigation }) => {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       GoogleSignin.getCurrentUser().then(async user => {
-        // REFATORAR DEPOIS
-        // Depois de logar com o usuário pelo google, verifica se ele já existe
-        //se não existir a gente manda ele se registrar
+        // user.user.id
+        const storeData = async () => {
+          try {
+            await AsyncStorage.setItem("@ID", user.user.id);
+          } catch (e) {
+            console.log("fudeu", e);
+          }
+        };
         const querySnapshot = await firestore()
           .collection("usuarios")
           .get();
         querySnapshot.forEach(doc => {
           if (doc.id == user.user.id) {
             navigation.navigate("Main");
+            return;
           }
         });
         navigation.navigate("Registrar", userInfo.user);
@@ -82,6 +89,7 @@ const Login = ({ navigation }) => {
     getCurrentUserInfo()
       .then(user => {
         if (user) {
+          console.log(user);
           navigation.navigate("Main");
         }
       })

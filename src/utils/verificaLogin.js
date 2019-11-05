@@ -4,6 +4,7 @@ import {
   statusCodes
 } from "@react-native-community/google-signin";
 
+//async-storage
 export async function verificaLogin() {
   // Firebase
   var user = false;
