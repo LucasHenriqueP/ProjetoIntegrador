@@ -43,13 +43,11 @@ const Login = ({ navigation }) => {
       const userInfo = await GoogleSignin.signIn();
       GoogleSignin.getCurrentUser().then(async user => {
         // user.user.id
-        const storeData = async () => {
-          try {
-            await AsyncStorage.setItem("@ID", user.user.id);
-          } catch (e) {
-            console.log("fudeu", e);
-          }
-        };
+        try {
+          await AsyncStorage.setItem("@ID", user.user.id);
+        } catch (e) {
+          console.log("fudeu", e);
+        }
         const querySnapshot = await firestore()
           .collection("usuarios")
           .get();
@@ -119,6 +117,11 @@ const Login = ({ navigation }) => {
 
       setEmail("");
       setSenha("");
+        try {
+          await AsyncStorage.setItem("@ID", auth().currentUser.uid);
+        } catch (e) {
+          console.log("fudeu", e);
+        }
       navigation.navigate("Main");
     } catch (e) {
       Service.catchErros(e);

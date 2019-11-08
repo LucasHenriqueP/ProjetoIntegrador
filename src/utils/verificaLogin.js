@@ -3,6 +3,16 @@ import {
   GoogleSignin,
   statusCodes
 } from "@react-native-community/google-signin";
+import AsyncStorage from "@react-native-community/async-storage";
+
+export async function pegaID() {
+  try {
+    const value = await AsyncStorage.getItem("@ID");
+    return value;
+  } catch (e) {
+    // save error
+  }
+}
 
 //async-storage
 export async function verificaLogin() {

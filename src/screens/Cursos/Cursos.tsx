@@ -16,6 +16,7 @@ import MLoading from "../../components/ModalLoading";
 import { showMessage } from "react-native-flash-message";
 import { TextInputMask } from "react-native-masked-text";
 import * as Service from "./Service";
+import * as Login from "../../utils/verificaLogin";
 
 const ref = Service.getRef();
 
@@ -45,7 +46,6 @@ const cursos = () => {
     setModalLoading(false);
   }
 
-  
   async function unfavoritaCurso(id) {
     setModalLoading(true);
     let arr = await Service.unfavoritaCurso(id, favs);
@@ -110,29 +110,23 @@ const cursos = () => {
           <Text style={styles.cursoId}>Nome: {item.nome}</Text>
 
           {/* se não for o criador do curso */}
-          {item.criador !== auth().currentUser.uid &&
-            favs.indexOf(item.id) !== -1 && (
-              <TouchableOpacity onPress={() => unfavoritaCurso(item.id)}>
-                <Icon
-                  style={{color: "red"}}
-                  name="star"
-                  type="font-awesome"
-                />
-              </TouchableOpacity>
-            )}
-          {item.criador !== auth().currentUser.uid &&
-            favs.indexOf(item.id) == -1 && (
-              <TouchableOpacity onPress={() => favoritaCurso(item.id)}>
-                <Icon
-                  style={styles.editarButtonText}
-                  name="star-o"
-                  type="font-awesome"
-                />
-              </TouchableOpacity>
-            )}
+          {item.criador !== user && favs.indexOf(item.id) !== -1 && (
+            <TouchableOpacity onPress={() => unfavoritaCurso(item.id)}>
+              <Icon style={{ color: "red" }} name="star" type="font-awesome" />
+            </TouchableOpacity>
+          )}
+          {item.criador !== user && favs.indexOf(item.id) == -1 && (
+            <TouchableOpacity onPress={() => favoritaCurso(item.id)}>
+              <Icon
+                style={styles.editarButtonText}
+                name="star-o"
+                type="font-awesome"
+              />
+            </TouchableOpacity>
+          )}
 
           {/* se for o criador do curso */}
-          {item.criador == auth().currentUser.uid && (
+          {item.criador == user && (
             <View style={styles.rowComponent}>
               <TouchableOpacity onPress={() => editaCurso(item)}>
                 <Text style={styles.editarButtonText}>Editar </Text>
@@ -193,18 +187,25 @@ const cursos = () => {
     }
   }, [Preco]);
 
+  let user;
+
   useEffect(() => {
-    setModalLoading(true);
-    const user = auth().currentUser.uid;
-    firestore()
-      .collection("usuarios")
-      .doc(user)
-      .get()
-      .then(function(doc) {
-        const { favoritos } = doc.data();
-        setFavs(favoritos.toString());
-        setModalLoading(false);
-      });
+    Login.pegaID().then(valor => {
+      user = valor;
+      setModalLoading(true);
+      firestore()
+        .collection("usuarios")
+        .doc(user)
+        .get()
+        .then(function(doc) {
+          let { favoritos } = doc.data();
+          if (!favoritos) {
+            favoritos = [];
+          }
+          setFavs(favoritos.toString());
+          setModalLoading(false);
+        });
+    });
     return ref.onSnapshot(querySnapshot => {
       const list = [];
       querySnapshot.forEach(doc => {
@@ -391,7 +392,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#202a31"
   },
-  iconStar:{
+  iconStar: {
     color: "#ffff1c"
   },
   row: {

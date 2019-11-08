@@ -16,6 +16,7 @@ import { TextInputMask } from "react-native-masked-text";
 import Loading from "../../../components/Loading";
 import MLoading from "../../../components/ModalLoading";
 import * as Service from "./Service";
+import * as Login from "../../../utils/verificaLogin";
 
 const ref = Service.getRef();
 
@@ -131,7 +132,7 @@ const cursos = () => {
             <TouchableOpacity onPress={() => editaCurso(item)}>
               <Text style={styles.editarButtonText}>Editar </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => removeCurso(item)}>
+            <TouchableOpacity onPress={() => Service.removeCurso(item)}>
               <Text style={styles.removerButtonText}>Remover</Text>
             </TouchableOpacity>
           </View>
@@ -186,8 +187,13 @@ const cursos = () => {
     }
   }, [Preco]);
 
+  let user = null;
+
+  Login.pegaID().then(valor => {
+    user = valor;
+  });
+
   useEffect(() => {
-    var user = auth().currentUser.uid;
     firestore()
       .collection("usuarios")
       .doc(user)

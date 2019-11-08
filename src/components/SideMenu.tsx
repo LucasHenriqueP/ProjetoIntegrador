@@ -10,20 +10,27 @@ import {
 import { Button } from "react-native-paper";
 import IOSIcon from "react-native-vector-icons/Ionicons";
 import { GoogleSignin } from "@react-native-community/google-signin";
+import AsyncStorage from "@react-native-community/async-storage";
 
 const SideMenu = ({ navigation }) => {
   async function sair() {
-    if (auth().currentUser) {
-      await auth().signOut();
-      navigation.navigate("Landing");
-      console.log("a")
-    }
-    if (GoogleSignin.isSignedIn) {
-      await GoogleSignin.signOut();
-      navigation.navigate("Landing");
-      console.log("b")
+    try {
+      await AsyncStorage.removeItem("@ID");
+      if (auth().currentUser) {
+        await auth().signOut();
+        navigation.navigate("Landing");
+        console.log("Saiu Firebase");
+      }
+      if (GoogleSignin.isSignedIn) {
+        await GoogleSignin.signOut();
+        navigation.navigate("Landing");
+        console.log("Saiu Google");
+      }
+    } catch (e) {
+      console.log("fudeu", e);
     }
   }
+
   return (
     <View style={styles.container}>
       <View style={{ backgroundColor: "#000", padding: 12.5 }}>

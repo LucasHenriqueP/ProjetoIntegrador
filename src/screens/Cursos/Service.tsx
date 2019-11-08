@@ -1,8 +1,7 @@
 import firestore from "@react-native-firebase/firestore";
-import auth from "@react-native-firebase/auth";
 import { Alert } from "react-native";
 import { showMessage } from "react-native-flash-message";
-
+import * as Login from "../../utils/verificaLogin";
 
 const ref = firestore().collection("cursos");
 
@@ -16,7 +15,8 @@ export const logaCursos = async () => {
   console.log("Documentos de Cursos", querySnapshot.docs);
 };
 
-export function removeCurso(item) {
+export async function removeCurso(item) {
+  let user = await Login.pegaID();
   const { nome, id, descricao, rating } = item;
   Alert.alert(
     "Remover Curso",
@@ -37,15 +37,14 @@ export function removeCurso(item) {
       .then(() => {
         firestore()
           .collection("usuarios")
-          .doc(auth().currentUser.uid)
+          .doc(user)
           .update("cursosOferecidos", firestore.FieldValue.arrayRemove(id));
       });
   }
 }
 
 export async function favoritaCurso(id, favs) {
-  const user = auth().currentUser.uid;
-
+  let user = await Login.pegaID();
   if (favs.indexOf(id) == -1) {
     await firestore()
       .collection("usuarios")
@@ -62,7 +61,7 @@ export async function favoritaCurso(id, favs) {
 }
 
 export async function unfavoritaCurso(id, favs) {
-  const user = auth().currentUser.uid;
+  let user = await Login.pegaID();
   var arr = favs;
   arr.splice(favs.indexOf(id), 1);
   await firestore()
@@ -108,8 +107,7 @@ export async function pegaCriador(criador) {
 }
 
 export async function addCurso(data) {
-  const user = auth().currentUser.uid;
-
+  let user = await Login.pegaID();
   const { Curso, Desc, Preco } = data;
   await ref
     .add({
