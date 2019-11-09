@@ -38,6 +38,7 @@ const cursos = () => {
   const [Celular, setCelular] = useState("");
   const [Email, setEmail] = useState("");
   const [favs, setFavs] = useState([]);
+  const [historico, setHistorico] = useState([]);
 
   async function favoritaCurso(id) {
     setModalLoading(true);
@@ -102,6 +103,28 @@ const cursos = () => {
     setModalLoading(false);
   }
 
+  function inscreverse(cursoID) {
+    setModalLoading(true);
+
+    Service.increverse(cursoID).then(() => {
+      setModalLoading(false);
+      let hist = [].concat(historico).concat(cursoID);
+      setHistorico(hist);
+      return;
+    });
+  }
+
+  function desinscreverse(cursoID) {
+    setModalLoading(true);
+    Service.desincreverse(cursoID).then(() => {
+      let arr = historico;
+      arr.splice(historico.indexOf(cursoID), 1);
+      setHistorico(arr);
+      setModalLoading(false);
+      return;
+    });
+  }
+
   function renderItem(item) {
     item = item.item;
     return (
@@ -153,6 +176,24 @@ const cursos = () => {
         >
           <Text style={styles.criadorButtonText}>Criador</Text>
         </TouchableOpacity>
+        {item.criador !== user && historico.indexOf(item.id) == -1 && (
+          <TouchableOpacity
+            onPress={() => inscreverse(item.id)}
+            style={styles.criadorButton}
+          >
+            <Text style={styles.criadorButtonText}>Quero este curso!</Text>
+          </TouchableOpacity>
+        )}
+        {item.criador !== user && historico.indexOf(item.id) !== -1 && (
+          <TouchableOpacity
+            onPress={() => desinscreverse(item.id)}
+            style={styles.criadorButton}
+          >
+            <Text style={styles.criadorButtonText}>
+              Não quero mais este curso!
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   }
@@ -198,10 +239,18 @@ const cursos = () => {
         .doc(user)
         .get()
         .then(function(doc) {
-          let { favoritos } = doc.data();
+          let { favoritos, historico } = doc.data();
           if (!favoritos) {
             favoritos = [];
           }
+          if (!historico) {
+            historico = [];
+          }
+          var arr = [];
+          historico.forEach(element => {
+            arr.push(element.id);
+          });
+          setHistorico(arr);
           setFavs(favoritos.toString());
           setModalLoading(false);
         });

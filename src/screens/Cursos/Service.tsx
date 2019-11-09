@@ -2,6 +2,7 @@ import firestore from "@react-native-firebase/firestore";
 import { Alert } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import * as Login from "../../utils/verificaLogin";
+import { cursorTo } from "readline";
 
 const ref = firestore().collection("cursos");
 
@@ -122,5 +123,41 @@ export async function addCurso(data) {
         .collection("usuarios")
         .doc(user)
         .update("cursosOferecidos", firestore.FieldValue.arrayUnion(doc.id));
+    });
+}
+
+export async function increverse(cursoID) {
+  var curso = {
+    id: cursoID,
+    dataInicio: firestore.Timestamp.now().toDate(),
+    dataFim: null
+  };
+  let user = await Login.pegaID();
+  firestore()
+    .collection("usuarios")
+    .doc(user)
+    .update("historico", firestore.FieldValue.arrayUnion(curso));
+}
+
+export async function desincreverse(cursoID) {
+  let user = await Login.pegaID();
+
+  await firestore()
+    .collection("usuarios")
+    .doc(user)
+    .get()
+    .then(async doc => {
+      let { historico } = doc.data();
+      let i = 0;
+      historico.forEach(element => {
+        if (element.id === cursoID) {
+          historico = element;
+          return;
+        }
+      });
+      await firestore()
+        .collection("usuarios")
+        .doc(user)
+        .update("historico", firestore.FieldValue.arrayRemove(historico));
     });
 }

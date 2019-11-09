@@ -87,7 +87,7 @@ const Login = ({ navigation }) => {
     getCurrentUserInfo()
       .then(user => {
         if (user) {
-          console.log(user);
+          // console.log(user);
           navigation.navigate("Main");
         }
       })
