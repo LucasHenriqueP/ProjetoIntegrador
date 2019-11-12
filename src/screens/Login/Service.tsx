@@ -99,6 +99,17 @@ export function verifica(data) {
     });
     return false;
   }
+
+  let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  if (reg.test(Email) === false) {
+    showMessage({
+      message: "Erro, E-mail inválido",
+      type: "danger",
+      icon: "danger",
+      duration: 1500
+    });
+    return false;
+  }
   if (Celular.toString().length != 15) {
     showMessage({
       message: "Erro, celular inválido",

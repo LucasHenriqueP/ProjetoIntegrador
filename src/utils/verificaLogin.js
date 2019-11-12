@@ -39,7 +39,7 @@ export async function verificaLogin() {
       return false;
     }
   });
-  console.log(user);
+  // console.log(user);
   return user;
   // TO-DO Facebook
 }

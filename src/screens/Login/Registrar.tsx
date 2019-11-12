@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "react-native-paper";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { View, StyleSheet, KeyboardAvoidingView } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Input } from "react-native-elements";
 import { TextInputMask } from "react-native-masked-text";
 
 import Loading from "../../components/Loading";
 import * as Service from "./Service";
 import { showMessage } from "react-native-flash-message";
+import * as Login from "../../utils/verificaLogin"
+import AsyncStorage from "@react-native-community/async-storage";
 
 const Registrar = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
@@ -56,7 +58,7 @@ const Registrar = ({ navigation }) => {
           setCelular("");
           setEmail("");
           setSenha("");
-
+          await AsyncStorage.setItem("@ID", ID);
           setLoading(false);
           navigation.navigate("Main");
         } catch (e) {
@@ -64,7 +66,6 @@ const Registrar = ({ navigation }) => {
         }
       }
     } else {
-      console.log("aqui");
       const verifica = Service.verificaGoogle(Celular);
       if (verifica) {
         console.log("foi");
