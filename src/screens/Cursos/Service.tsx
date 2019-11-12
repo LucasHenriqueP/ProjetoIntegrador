@@ -73,12 +73,11 @@ export async function unfavoritaCurso(id, favs) {
 }
 
 export async function modifyCurso(data) {
-  const { ID, Curso, Desc, Rat, Preco } = data;
+  const { ID, Curso, Desc, Preco } = data;
   await ref.doc(ID).set(
     {
       nome: Curso,
       descricao: Desc,
-      rating: parseInt(Rat),
       preco: Preco
     },
     { merge: true }

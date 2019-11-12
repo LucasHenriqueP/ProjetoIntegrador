@@ -26,7 +26,6 @@ const cursos = () => {
   const [Curso, setCurso] = useState("");
   const [Preco, setPreco] = useState("R$0,00");
   const [Desc, setDesc] = useState("");
-  const [Rat, setRating] = useState("");
   const [loading, setLoading] = useState(false); // Set loading to true on component mount
   const [Cursos, setCursos] = useState([]); // Initial empty array of Cursos
   const [ModalAdicionar, setModalAdicionar] = useState(false);
@@ -41,6 +40,7 @@ const cursos = () => {
   const [historico, setHistorico] = useState([]);
   const [valor, setValor] = useState("");
   const [listCursos, setListCursos] = useState([]);
+  const [user, setUser] = useState("");
 
   async function favoritaCurso(id) {
     setModalLoading(true);
@@ -92,14 +92,12 @@ const cursos = () => {
     const data = {
       ID: ID,
       Curso: Curso,
-      Rat: Rat,
       Desc: Desc,
       Preco: Preco
     };
     Service.modifyCurso(data);
     setCurso("");
     setDesc("");
-    setRating("");
     setID("");
     setPreco("R$0,00");
     setModalLoading(false);
@@ -230,15 +228,13 @@ const cursos = () => {
     }
   }, [Preco]);
 
-  let user;
-
   useEffect(() => {
     Login.pegaID().then(valor => {
-      user = valor;
+      setUser(valor);
       setModalLoading(true);
       firestore()
         .collection("usuarios")
-        .doc(user)
+        .doc(valor)
         .get()
         .then(function(doc) {
           let { favoritos, historico } = doc.data();
