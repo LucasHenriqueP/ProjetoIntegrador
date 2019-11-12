@@ -1,5 +1,4 @@
 import firestore from "@react-native-firebase/firestore";
-import auth from "@react-native-firebase/auth";
 import React, { useState, useEffect } from "react";
 import { Button } from "react-native-paper";
 import {
@@ -10,13 +9,14 @@ import {
   StyleSheet,
   Alert
 } from "react-native";
-import { Overlay, Input, Rating, Icon } from "react-native-elements";
+import { Overlay, Input, Rating, Icon, SearchBar } from "react-native-elements";
 import Loading from "../../components/Loading";
 import MLoading from "../../components/ModalLoading";
 import { showMessage } from "react-native-flash-message";
 import { TextInputMask } from "react-native-masked-text";
 import * as Service from "./Service";
 import * as Login from "../../utils/verificaLogin";
+import _ from "lodash";
 
 const ref = Service.getRef();
 
@@ -39,6 +39,8 @@ const cursos = () => {
   const [Email, setEmail] = useState("");
   const [favs, setFavs] = useState([]);
   const [historico, setHistorico] = useState([]);
+  const [valor, setValor] = useState("");
+  const [listCursos, setListCursos] = useState([]);
 
   async function favoritaCurso(id) {
     setModalLoading(true);
@@ -269,6 +271,7 @@ const cursos = () => {
         });
       });
       setCursos(list);
+      setListCursos(list);
       if (loading) {
         setLoading(false);
       }
@@ -296,10 +299,38 @@ const cursos = () => {
     setPreco("R$0,00");
   };
 
+  const searchFilterFunction = texto => {
+    setValor(texto);
+    const formatado = texto.toLowerCase();
+    var filtrado = _.filter(Cursos, dados => {
+      if (
+        dados.descricao.includes(formatado) ||
+        dados.nome.includes(formatado)
+      ) {
+        return true;
+      }
+      return false;
+    });
+    if (!texto) {
+      setCursos(listCursos);
+    } else {
+      setCursos(filtrado);
+    }
+  };
+
   return (
     <>
       <View style={styles.container}>
         <MLoading ModalLoading={modalLoading} />
+
+        <SearchBar
+          placeholder="Buscar"
+          lightTheme
+          round
+          onChangeText={searchFilterFunction}
+          autoCorrect={false}
+          value={valor}
+        />
 
         <FlatList
           contentContainerStyle={styles.list}
