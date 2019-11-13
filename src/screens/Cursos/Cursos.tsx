@@ -161,7 +161,7 @@ const cursos = () => {
           )}
         </View>
         <Text>
-          Id: <Text style={styles.curso}>{item.id}</Text>
+          Professor: <Text style={styles.curso}>{item.criadorNome}</Text>
         </Text>
         <Text>
           Descrição: <Text style={styles.curso}>{item.descricao}</Text>
@@ -256,14 +256,15 @@ const cursos = () => {
     return ref.onSnapshot(querySnapshot => {
       const list = [];
       querySnapshot.forEach(doc => {
-        const { nome, descricao, rating, criador, preco } = doc.data();
+        const { nome, descricao, rating, criador, preco, criadorNome } = doc.data();
         list.push({
           id: doc.id,
           nome,
           descricao,
           rating,
           criador,
-          preco
+          preco,
+          criadorNome
         });
       });
       setCursos(list);
@@ -300,8 +301,9 @@ const cursos = () => {
     const formatado = texto.toLowerCase();
     var filtrado = _.filter(Cursos, dados => {
       if (
-        dados.descricao.includes(formatado) ||
-        dados.nome.includes(formatado)
+        dados.descricao.toLowerCase().includes(formatado) ||
+        dados.nome.toLowerCase().includes(formatado) ||
+        dados.criadorNome.toLowerCase().includes(formatado)
       ) {
         return true;
       }

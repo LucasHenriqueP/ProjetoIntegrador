@@ -85,7 +85,7 @@ export async function modifyCurso(data) {
 }
 
 export async function pegaCriador(criador) {
-  var usuario: { [key: string]: any };
+  var usuario: {};
   await firestore()
     .collection("usuarios")
     .doc(criador)
@@ -108,6 +108,7 @@ export async function pegaCriador(criador) {
 
 export async function addCurso(data) {
   let user = await Login.pegaID();
+  const docUser = await pegaCriador(user);
   const { Curso, Desc, Preco } = data;
   await ref
     .add({
@@ -115,7 +116,8 @@ export async function addCurso(data) {
       descricao: Desc,
       rating: 0,
       preco: Preco,
-      criador: user
+      criador: user,
+      criadorNome: docUser.nome + " " + docUser.sobrenome
     })
     .then(function(doc) {
       firestore()
