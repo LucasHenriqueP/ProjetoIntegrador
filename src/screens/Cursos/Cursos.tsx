@@ -7,7 +7,8 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  Alert
+  Alert,
+  Picker
 } from "react-native";
 import { Overlay, Input, Rating, Icon, SearchBar } from "react-native-elements";
 import Loading from "../../components/Loading";
@@ -39,6 +40,7 @@ const cursos = () => {
   const [favs, setFavs] = useState([]);
   const [historico, setHistorico] = useState([]);
   const [valor, setValor] = useState("");
+  const [filtro, setFiltro] = useState("");
   const [listCursos, setListCursos] = useState([]);
   const [user, setUser] = useState("");
 
@@ -256,7 +258,14 @@ const cursos = () => {
     return ref.onSnapshot(querySnapshot => {
       const list = [];
       querySnapshot.forEach(doc => {
-        const { nome, descricao, rating, criador, preco, criadorNome } = doc.data();
+        const {
+          nome,
+          descricao,
+          rating,
+          criador,
+          preco,
+          criadorNome
+        } = doc.data();
         list.push({
           id: doc.id,
           nome,
@@ -296,7 +305,7 @@ const cursos = () => {
     setPreco("R$0,00");
   };
 
-  const searchFilterFunction = texto => {
+  const pesquisa = texto => {
     setValor(texto);
     const formatado = texto.toLowerCase();
     var filtrado = _.filter(Cursos, dados => {
@@ -316,6 +325,14 @@ const cursos = () => {
     }
   };
 
+  const filtragem = opcao => {
+    setFiltro(opcao);
+
+
+
+
+  };
+
   return (
     <>
       <View style={styles.container}>
@@ -325,10 +342,22 @@ const cursos = () => {
           placeholder="Buscar"
           lightTheme
           round
-          onChangeText={searchFilterFunction}
+          onChangeText={pesquisa}
           autoCorrect={false}
           value={valor}
         />
+        <Picker
+          selectedValue={filtro}
+          style={styles.dropdown}
+          onValueChange={(itemValue, itemIndex) => filtragem(itemValue)}
+          mode={"dropdown"}
+        >
+          <Picker.Item label="Favoritos" value="fav" />
+          <Picker.Item label="Menor Preço" value="precoB" />
+          <Picker.Item label="Maior Preço" value="preco" />
+          <Picker.Item label="Menor Avaliação" value="ratingB" />
+          <Picker.Item label="Maior Avaliação" value="rating" />
+        </Picker>        
 
         <FlatList
           contentContainerStyle={styles.list}
@@ -427,6 +456,9 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: 10
+  },
+  dropdown: {
+    width: "auto",
   },
   cursoContainer: {
     backgroundColor: "#FFF",
