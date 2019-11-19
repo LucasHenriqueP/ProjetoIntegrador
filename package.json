@@ -56,7 +56,7 @@
     "@babel/runtime": "^7.7.0",
     "@react-native-community/eslint-config": "^0.0.5",
     "@types/jest": "^24.0.21",
-    "@types/lodash": "^4.14.146",
+    "@types/lodash": "^4.14.149",
     "@types/react": "^16.9.11",
     "@types/react-native": "^0.60.22",
     "@types/react-test-renderer": "^16.9.1",

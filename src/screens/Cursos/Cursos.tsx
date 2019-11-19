@@ -251,7 +251,7 @@ const cursos = () => {
             arr.push(element.id);
           });
           setHistorico(arr);
-          setFavs(favoritos.toString());
+          setFavs(favoritos);
           setModalLoading(false);
         });
     });
@@ -327,10 +327,42 @@ const cursos = () => {
 
   const filtragem = opcao => {
     setFiltro(opcao);
+    var novoArray = [];
 
-
-
-
+    switch (opcao) {
+      case "fav":
+        var favoritos = [];
+        var naoFavoritos = [];
+        _.filter(Cursos, dados => {
+          if (favs.indexOf(dados.id) !== -1) {
+            favoritos.push(dados);
+          } else {
+            naoFavoritos.push(dados);
+          }
+        });
+        var result = [].concat(favoritos).concat(naoFavoritos);
+        setCursos(result);
+        break;
+      case "precoB":
+        novoArray = _.orderBy(Cursos, ["preco"], ["asc"]);
+        break;
+      case "preco":
+        novoArray = _.orderBy(Cursos, ["preco"], ["desc"]);
+        break;
+      case "ratingB":
+        novoArray = _.orderBy(Cursos, ["rating"], ["asc"]);
+        break;
+      case "rating":
+        novoArray = _.orderBy(Cursos, ["rating"], ["desc"]); // Use Lodash to sort array by 'name'
+        break;
+      case "none":
+        setCursos(listCursos);
+        console.log(listCursos);
+        break;
+    }
+    if (opcao != "fav" && opcao != "none") {
+      setCursos(novoArray);
+    }
   };
 
   return (
@@ -350,14 +382,14 @@ const cursos = () => {
           selectedValue={filtro}
           style={styles.dropdown}
           onValueChange={(itemValue, itemIndex) => filtragem(itemValue)}
-          mode={"dropdown"}
         >
+          <Picker.Item label="Ordenar por..." value="none" />
           <Picker.Item label="Favoritos" value="fav" />
           <Picker.Item label="Menor Preço" value="precoB" />
           <Picker.Item label="Maior Preço" value="preco" />
           <Picker.Item label="Menor Avaliação" value="ratingB" />
           <Picker.Item label="Maior Avaliação" value="rating" />
-        </Picker>        
+        </Picker>
 
         <FlatList
           contentContainerStyle={styles.list}
@@ -458,7 +490,7 @@ const styles = StyleSheet.create({
     padding: 10
   },
   dropdown: {
-    width: "auto",
+    width: "auto"
   },
   cursoContainer: {
     backgroundColor: "#FFF",
