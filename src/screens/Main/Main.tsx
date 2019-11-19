@@ -1,10 +1,8 @@
 import auth from "@react-native-firebase/auth";
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Button } from "react-native-paper";
 import { showMessage } from "react-native-flash-message";
-
-import Background from "../../components/Background";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 import Login from "../Login/Login";
 import Loading from "../../components/Loading";
 import MLoading from "../../components/ModalLoading";
@@ -19,6 +17,8 @@ const Page1 = ({ navigation }) => {
   const [Google, setGoogle] = useState(false);
   const [email, setEmail] = useState(false);
   const [ModalLoading, setModalLoading] = useState(false);
+  const [Lat, setLat] = useState("");
+  const [Long, setLong] = useState("");
 
   // Handle user state changes
   function onAuthStateChanged(user) {
@@ -46,6 +46,19 @@ const Page1 = ({ navigation }) => {
         duration: 4500
       });
     }
+
+    // navigator.geolocation.getCurrentPosition(
+    //   position => {
+    //     console.log(position);
+
+    //       // setLat(position.coords.latitude)
+    //       // setLong(position.coords.longitude)
+    //       error: null
+    //   },
+    //   error => console.log(error),
+    //   { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 }
+    // );
+
     return subscriber;
   }, []);
 
@@ -63,9 +76,19 @@ const Page1 = ({ navigation }) => {
   }
 
   return (
-    <Background>
+    <View style={styles.container}>
+      <MapView
+        provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+        style={styles.map}
+        initialRegion={{
+          latitude: -24.0417429,
+          longitude: -52.3839641,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421
+        }}
+      />
       <MLoading ModalLoading={ModalLoading} />
-      <View style={styles.auth}>
+      <View style={styles.container}>
         {user && !auth().currentUser.emailVerified && (
           <View style={styles.topcenter}>
             <Text>Enviamos um link de ativação para o seu e-mail</Text>
@@ -76,42 +99,21 @@ const Page1 = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         )}
-        <Button
-          style={{ marginBottom: 10 }}
-          mode="contained"
-          onPress={() => navigation.navigate("Cursos")}
-        >
-          Cursos
-        </Button>
-        <Button
-          style={{ margin: 5 }}
-          mode="contained"
-          onPress={() => navigation.navigate("Users")}
-        >
-          Usuários
-        </Button>
-
-        <Button
-          style={{ margin: 5 }}
-          mode="contained"
-          onPress={() => navigation.navigate("CursosADM")}
-        >
-          CursosADM
-        </Button>
-
-        <Button
-          style={{ margin: 5 }}
-          mode="contained"
-          onPress={() => navigation.navigate("UsersADM")}
-        >
-          UsuáriosADM
-        </Button>
       </View>
-    </Background>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    flex: 1
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject
+  },
   auth: {
     flex: 1,
     justifyContent: "center",

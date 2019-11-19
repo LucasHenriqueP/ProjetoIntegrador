@@ -56,11 +56,24 @@ const SideMenu = ({ navigation }) => {
             >
               Cursos
             </Button>
+            <Button
+              style={styles.navItemStyle}
+              onPress={() => navigation.navigate("CursosADM")}
+            >
+              CursosADM
+            </Button>
+
+            <Button
+              style={styles.navItemStyle}
+              onPress={() => navigation.navigate("UsersADM")}
+            >
+              UsuáriosADM
+            </Button>
           </View>
         </View>
       </ScrollView>
       <View style={styles.footerContainer}>
-        <Button onPress={async () => await sair()}>SAAAAAAAAAAI</Button>
+        <Button onPress={async () => await sair()}>Sair</Button>
       </View>
     </View>
   );
@@ -73,7 +86,6 @@ const styles = StyleSheet.create({
   navItemStyle: {
     marginBottom: 1,
     borderRadius: 5,
-    borderColor: "red",
     borderWidth: 1,
     fontSize: 18,
     backgroundColor: "#ddd"
