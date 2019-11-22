@@ -56,12 +56,12 @@ const SideMenu = ({ navigation }) => {
             >
               Cursos Online
             </Button>
-            {/* <Button
+            <Button
               style={styles.navItemStyle}
-              onPress={() => navigation.navigate("Cursos")}
+              onPress={() => navigation.navigate("CursosP")}
             >
               Cursos Presenciais
-            </Button> */}
+            </Button>
             <Button
               style={styles.navItemStyle}
               onPress={() => navigation.navigate("CursosADM")}

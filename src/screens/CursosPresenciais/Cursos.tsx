@@ -20,7 +20,7 @@ import _ from "lodash";
 
 const ref = Service.getRef();
 
-const cursos = ({ navigation }) => {
+const CursosP = ({ navigation }) => {
   //essa porra ta muito feia, certeza que to fazendo algo de errado
   const [Preco, setPreco] = useState("R$0,00");
   const [loading, setLoading] = useState(false); // Set loading to true on component mount
@@ -440,4 +440,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default cursos;
+export default CursosP;
