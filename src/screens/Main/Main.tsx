@@ -1,8 +1,16 @@
 import auth from "@react-native-firebase/auth";
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  PermissionsAndroid
+} from "react-native";
 import { showMessage } from "react-native-flash-message";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Marker } from "react-native-maps";
+import Geolocation from "react-native-geolocation-service";
+import Geocoder from "react-native-geocoding";
 import Login from "../Login/Login";
 import Loading from "../../components/Loading";
 import MLoading from "../../components/ModalLoading";
@@ -17,9 +25,9 @@ const Page1 = ({ navigation }) => {
   const [Google, setGoogle] = useState(false);
   const [email, setEmail] = useState(false);
   const [ModalLoading, setModalLoading] = useState(false);
-  const [Lat, setLat] = useState("");
-  const [Long, setLong] = useState("");
-
+  const [Lat, setLat] = useState(-24.0417429);
+  const [Long, setLong] = useState(-52.3839641);
+  const [marcadores, setMarcadores] = useState([]);
   // Handle user state changes
   function onAuthStateChanged(user) {
     setUser(user);
@@ -34,8 +42,66 @@ const Page1 = ({ navigation }) => {
     }
   }
 
+  function trocaLocalizacaoUser(local) {
+    local = local.nativeEvent.coordinate;
+    setLat(local.latitude);
+    setLong(local.longitude);
+  }
+
+  async function carregaMarcadores() {
+    var arraylocalizacoes = [];
+    // Ignorar esse erro
+    Geocoder.from("utfpr Campo Mourão")
+      .then(json => {
+        var location = json.results[0].geometry.location;
+        var localizacao = {
+          latlng: {
+            latitude: "",
+            longitude: ""
+          },
+          title: "teste1",
+          description: "teste2"
+        };
+        localizacao.latlng.latitude = location.lat;
+        localizacao.latlng.longitude = location.lng;
+        arraylocalizacoes.push(localizacao);
+      })
+      .catch(error => console.warn(error));
+    setMarcadores(arraylocalizacoes);
+  }
+
+  async function requestLocationPermission() {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: "uCursos permissão para localização",
+          message:
+            "uCUrsos necessita de permissão de acesso a sua localização " +
+            "para encontrar os cursos mais perto de você.",
+          buttonNeutral: "Ask Me Later",
+          buttonNegative: "Cancel",
+          buttonPositive: "OK"
+        }
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        // console.log("You can use the Location");
+        return true;
+      } else {
+        // console.log("Location permission denied");
+        return false;
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+
   useEffect(() => {
     var subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    // Ignorar esse erro
+    Geocoder.init("AIzaSyA_pPgl2oQwlyHVizFnCUajLUbAG0RXNvE", {
+      language: "pt-BR"
+    });
 
     if (user && !Verify.userVerified() && !email && !Google) {
       showMessage({
@@ -46,20 +112,25 @@ const Page1 = ({ navigation }) => {
         duration: 4500
       });
     }
+    // Se começar a dar erro, migrar para
+    // https://github.com/react-native-community/react-native-geolocation
+    requestLocationPermission().then(result => {
+      if (result) {
+        Geolocation.getCurrentPosition(
+          position => {
+            setLat(position.coords.latitude);
+            setLong(position.coords.longitude);
+          },
+          error => {
+            // See error code charts below.
+            console.log(error.code, error.message);
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
+      }
+    });
 
-    // navigator.geolocation.getCurrentPosition(
-    //   position => {
-    //     console.log(position);
-
-    //       // setLat(position.coords.latitude)
-    //       // setLong(position.coords.longitude)
-    //       error: null
-    //   },
-    //   error => console.log(error),
-    //   { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 }
-    // );
-
-    return subscriber;
+    carregaMarcadores();
   }, []);
 
   if (loading) return <Loading />;
@@ -81,12 +152,23 @@ const Page1 = ({ navigation }) => {
         provider={PROVIDER_GOOGLE} // remove if not using Google Maps
         style={styles.map}
         initialRegion={{
-          latitude: -24.0417429,
-          longitude: -52.3839641,
+          latitude: Lat,
+          longitude: Long,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421
         }}
-      />
+        showsUserLocation={true}
+        onUserLocationChange={trocaLocalizacaoUser}
+        customMapStyle={estilomapa}
+      >
+        {marcadores.map(marker => (
+          <Marker
+            coordinate={marker.latlng}
+            title={marker.title}
+            description={marker.description}
+          />
+        ))}
+      </MapView>
       <MLoading ModalLoading={ModalLoading} />
       <View style={styles.container}>
         {user && !auth().currentUser.emailVerified && (
@@ -145,4 +227,165 @@ const styles = StyleSheet.create({
   }
 });
 
+const estilomapa = [
+  {
+    elementType: "geometry",
+    stylers: [
+      {
+        color: "#242f3e"
+      }
+    ]
+  },
+  {
+    elementType: "labels.text.fill",
+    stylers: [
+      {
+        color: "#746855"
+      }
+    ]
+  },
+  {
+    elementType: "labels.text.stroke",
+    stylers: [
+      {
+        color: "#242f3e"
+      }
+    ]
+  },
+  {
+    featureType: "administrative.locality",
+    elementType: "labels.text.fill",
+    stylers: [
+      {
+        color: "#d59563"
+      }
+    ]
+  },
+  {
+    featureType: "poi",
+    elementType: "labels.text.fill",
+    stylers: [
+      {
+        color: "#d59563"
+      }
+    ]
+  },
+  {
+    featureType: "poi.park",
+    elementType: "geometry",
+    stylers: [
+      {
+        color: "#263c3f"
+      }
+    ]
+  },
+  {
+    featureType: "poi.park",
+    elementType: "labels.text.fill",
+    stylers: [
+      {
+        color: "#6b9a76"
+      }
+    ]
+  },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [
+      {
+        color: "#38414e"
+      }
+    ]
+  },
+  {
+    featureType: "road",
+    elementType: "geometry.stroke",
+    stylers: [
+      {
+        color: "#212a37"
+      }
+    ]
+  },
+  {
+    featureType: "road",
+    elementType: "labels.text.fill",
+    stylers: [
+      {
+        color: "#9ca5b3"
+      }
+    ]
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [
+      {
+        color: "#746855"
+      }
+    ]
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry.stroke",
+    stylers: [
+      {
+        color: "#1f2835"
+      }
+    ]
+  },
+  {
+    featureType: "road.highway",
+    elementType: "labels.text.fill",
+    stylers: [
+      {
+        color: "#f3d19c"
+      }
+    ]
+  },
+  {
+    featureType: "transit",
+    elementType: "geometry",
+    stylers: [
+      {
+        color: "#2f3948"
+      }
+    ]
+  },
+  {
+    featureType: "transit.station",
+    elementType: "labels.text.fill",
+    stylers: [
+      {
+        color: "#d59563"
+      }
+    ]
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [
+      {
+        color: "#17263c"
+      }
+    ]
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.fill",
+    stylers: [
+      {
+        color: "#515c6d"
+      }
+    ]
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.stroke",
+    stylers: [
+      {
+        color: "#17263c"
+      }
+    ]
+  }
+];
 export default Page1;

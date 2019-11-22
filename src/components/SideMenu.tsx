@@ -54,8 +54,14 @@ const SideMenu = ({ navigation }) => {
               style={styles.navItemStyle}
               onPress={() => navigation.navigate("Cursos")}
             >
-              Cursos
+              Cursos Online
             </Button>
+            {/* <Button
+              style={styles.navItemStyle}
+              onPress={() => navigation.navigate("Cursos")}
+            >
+              Cursos Presenciais
+            </Button> */}
             <Button
               style={styles.navItemStyle}
               onPress={() => navigation.navigate("CursosADM")}
