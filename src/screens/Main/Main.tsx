@@ -53,7 +53,6 @@ const Page1 = ({ navigation }) => {
 
   async function carregaMarcadores() {
     var arraylocalizacoes = [];
-    var wait = false;
     // Ignorar esse erro
     Cursos.forEach(curso => {
       Geocoder.from(curso.local)
@@ -190,6 +189,7 @@ const Page1 = ({ navigation }) => {
             coordinate={marker.latlng}
             title={marker.title}
             description={marker.description}
+            onCalloutPress={() => navigation.navigate("CursosP")}
           />
         ))}
       </MapView>
