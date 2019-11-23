@@ -28,14 +28,12 @@ const Editar = ({ navigation }) => {
   }
 
   useEffect(() => {
-    console.log("entrou");
     setModalLoading(true);
     setID(navigation.getParam("id"));
     setCurso(navigation.getParam("nome"));
     setDesc(navigation.getParam("descricao"));
     setPreco(navigation.getParam("preco"));
     setModalLoading(false);
-    console.log({ ID, Curso, Desc, Preco });
   }, []);
 
   return (

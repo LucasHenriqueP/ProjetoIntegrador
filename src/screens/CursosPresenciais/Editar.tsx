@@ -11,6 +11,7 @@ const EditarP = ({ navigation }) => {
   const [ID, setID] = useState("");
   const [Curso, setCurso] = useState("");
   const [Preco, setPreco] = useState("R$0,00");
+  const [Local, setLocal] = useState("");
   const [Desc, setDesc] = useState("");
   const [modalLoading, setModalLoading] = useState(false);
 
@@ -20,7 +21,8 @@ const EditarP = ({ navigation }) => {
       ID: ID,
       Curso: Curso,
       Desc: Desc,
-      Preco: Preco
+      Preco: Preco,
+      Local: Local
     };
     Service.modifyCurso(data);
     setModalLoading(false);
@@ -28,14 +30,13 @@ const EditarP = ({ navigation }) => {
   }
 
   useEffect(() => {
-    console.log("entrou");
     setModalLoading(true);
     setID(navigation.getParam("id"));
     setCurso(navigation.getParam("nome"));
     setDesc(navigation.getParam("descricao"));
     setPreco(navigation.getParam("preco"));
+    setLocal(navigation.getParam("local"));
     setModalLoading(false);
-    console.log({ ID, Curso, Desc, Preco });
   }, []);
 
   return (
@@ -43,6 +44,7 @@ const EditarP = ({ navigation }) => {
       <MLoading ModalLoading={modalLoading} />
       <Input label={"Nome"} value={Curso} onChangeText={setCurso} />
       <Input label={"Descrição"} value={Desc} onChangeText={setDesc} />
+      <Input label={"Localização"} value={Local} onChangeText={setLocal} />
       <Input
         label={"Preço"}
         type={"money"}

@@ -3,7 +3,7 @@ import { Alert } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import * as Login from "../../utils/verificaLogin";
 
-const ref = firestore().collection("cursos");
+const ref = firestore().collection("cursosPresenciais");
 
 export function getRef() {
   return ref;
@@ -17,10 +17,10 @@ export const logaCursos = async () => {
 
 export async function removeCurso(item) {
   let user = await Login.pegaID();
-  const { nome, id, descricao, rating } = item;
+  const { nome, id, descricao, rating, local } = item;
   Alert.alert(
     "Remover Curso",
-    `ID: ${id}\nNome: ${nome}\nDescrição: ${descricao}\nRating: ${rating}`,
+    `ID: ${id}\nNome: ${nome}\nDescrição: ${descricao}\nRating: ${rating}\nLocalização:${local}`,
     [
       {
         text: "Cancelar",
@@ -72,11 +72,12 @@ export async function unfavoritaCurso(id, favs) {
 }
 
 export async function modifyCurso(data) {
-  const { ID, Curso, Desc, Preco } = data;
+  const { ID, Curso, Desc, Preco, Local } = data;
   await ref.doc(ID).set(
     {
       nome: Curso,
       descricao: Desc,
+      local: Local,
       preco: Preco
     },
     { merge: true }
@@ -108,7 +109,7 @@ export async function pegaCriador(criador) {
 export async function addCurso(data) {
   let user = await Login.pegaID();
   const docUser = await pegaCriador(user);
-  const { Curso, Desc, Preco } = data;
+  const { Curso, Desc, Preco, Local } = data;
   await ref
     .add({
       nome: Curso,
@@ -116,7 +117,8 @@ export async function addCurso(data) {
       rating: 0,
       preco: Preco,
       criador: user,
-      criadorNome: docUser.nome + " " + docUser.sobrenome
+      criadorNome: docUser.nome + " " + docUser.sobrenome,
+      local: Local
     })
     .then(function(doc) {
       firestore()

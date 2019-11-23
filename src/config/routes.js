@@ -84,6 +84,90 @@ const SettingsStack = createStackNavigator(
       navigationOptions: {
         headerTitle: "Perfil"
       }
+    },
+    Cursos: {
+      screen: Cursos,
+      navigationOptions: ({ navigation }) => ({
+        title: "Lista de Cursos",
+        headerStyle: {
+          backgroundColor: "#000000"
+        },
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+          fontSize: 18,
+          fontWeight: "bold"
+        }
+      })
+    },
+    CursosRegistrar: {
+      screen: CursosRegistrar,
+      navigationOptions: {
+        headerTitle: "Criar Curso",
+        headerStyle: {
+          backgroundColor: "#000000"
+        },
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+          fontSize: 18,
+          fontWeight: "bold"
+        }
+      }
+    },
+    CursosEditar: {
+      screen: CursosEditar,
+      navigationOptions: {
+        headerTitle: "Editar Curso",
+        headerStyle: {
+          backgroundColor: "#000000"
+        },
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+          fontSize: 18,
+          fontWeight: "bold"
+        }
+      }
+    },
+    CursosP: {
+      screen: CursosP,
+      navigationOptions: ({ navigation }) => ({
+        title: "Lista de Cursos",
+        headerStyle: {
+          backgroundColor: "#000000"
+        },
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+          fontSize: 18,
+          fontWeight: "bold"
+        }
+      })
+    },
+    CursosRegistrarP: {
+      screen: CursosRegistrarP,
+      navigationOptions: {
+        headerTitle: "Criar Curso",
+        headerStyle: {
+          backgroundColor: "#000000"
+        },
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+          fontSize: 18,
+          fontWeight: "bold"
+        }
+      }
+    },
+    CursosEditarP: {
+      screen: CursosEditarP,
+      navigationOptions: {
+        headerTitle: "Editar Curso",
+        headerStyle: {
+          backgroundColor: "#000000"
+        },
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+          fontSize: 18,
+          fontWeight: "bold"
+        }
+      }
     }
   },
   { headerLayoutPreset: "center" }
@@ -129,139 +213,22 @@ const AuthStack = createStackNavigator(
   { headerLayoutPreset: "center" }
 );
 
-const CursosStack = createStackNavigator(
-  {
-    Landing: {
-      screen: Cursos,
-      navigationOptions: ({ navigation }) => ({
-        title: "Lista de Cursos",
-        headerStyle: {
-          backgroundColor: "#000000"
-        },
-        headerTintColor: "#FFF",
-        headerTitleStyle: {
-          fontSize: 18,
-          fontWeight: "bold"
-        }
-      })
-    },
-    CursosRegistrar: {
-      screen: CursosRegistrar,
-      navigationOptions: {
-        headerTitle: "Criar Curso",
-        headerStyle: {
-          backgroundColor: "#000000"
-        },
-        headerTintColor: "#FFF",
-        headerTitleStyle: {
-          fontSize: 18,
-          fontWeight: "bold"
-        }
-      }
-    },
-    CursosEditar: {
-      screen: CursosEditar,
-      navigationOptions: {
-        headerTitle: "Editar Curso",
-        headerStyle: {
-          backgroundColor: "#000000"
-        },
-        headerTintColor: "#FFF",
-        headerTitleStyle: {
-          fontSize: 18,
-          fontWeight: "bold"
-        }
-      }
-    }
-  },
-  { headerLayoutPreset: "center" }
-);
-
-const CursosStackP = createStackNavigator(
-  {
-    Landing: {
-      screen: CursosP,
-      navigationOptions: ({ navigation }) => ({
-        title: "Lista de Cursos",
-        headerStyle: {
-          backgroundColor: "#000000"
-        },
-        headerTintColor: "#FFF",
-        headerTitleStyle: {
-          fontSize: 18,
-          fontWeight: "bold"
-        }
-      })
-    },
-    CursosRegistrar: {
-      screen: CursosRegistrarP,
-      navigationOptions: {
-        headerTitle: "Criar Curso",
-        headerStyle: {
-          backgroundColor: "#000000"
-        },
-        headerTintColor: "#FFF",
-        headerTitleStyle: {
-          fontSize: 18,
-          fontWeight: "bold"
-        }
-      }
-    },
-    CursosEditar: {
-      screen: CursosEditarP,
-      navigationOptions: {
-        headerTitle: "Editar Curso",
-        headerStyle: {
-          backgroundColor: "#000000"
-        },
-        headerTintColor: "#FFF",
-        headerTitleStyle: {
-          fontSize: 18,
-          fontWeight: "bold"
-        }
-      }
-    }
-  },
-  { headerLayoutPreset: "center" }
-);
-
 const MainDrawer = createDrawerNavigator(
   {
     Perfil: SettingsStack
   },
   {
     contentComponent: SideMenu,
-    drawerWidth: Dimensions.get("window").width - 200
+    drawerWidth: Dimensions.get("window").width - 150
   }
 );
-
-const Teste = createStackNavigator({
-  App: {
-    screen: MainDrawer,
-    navigationOptions: {
-      header: null
-    }
-  },
-  Cursos: {
-    screen: CursosStack,
-    navigationOptions: {
-      header: null
-    }
-  },
-  CursosP: {
-    screen: CursosStackP,
-    navigationOptions: {
-      header: null
-    }
-  }
-});
 
 const App = createSwitchNavigator({
   Auth: {
     screen: AuthStack
   },
   App: {
-    screen: Teste
+    screen: MainDrawer
   }
 });
 

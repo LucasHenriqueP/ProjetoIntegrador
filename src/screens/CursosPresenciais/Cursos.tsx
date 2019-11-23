@@ -123,7 +123,7 @@ const CursosP = ({ navigation }) => {
           {item.criador == user && (
             <View style={styles.rowComponent}>
               <TouchableOpacity
-                onPress={() => navigation.navigate("CursosEditar", item)}
+                onPress={() => navigation.navigate("CursosEditarP", item)}
               >
                 <Text style={styles.editarButtonText}>Editar </Text>
               </TouchableOpacity>
@@ -138,6 +138,9 @@ const CursosP = ({ navigation }) => {
         </Text>
         <Text>
           Descrição: <Text style={styles.curso}>{item.descricao}</Text>
+        </Text>
+        <Text>
+          Localização: <Text style={styles.curso}>{item.local}</Text>
         </Text>
         <Text>
           Preço: <Text style={styles.curso}>{item.preco}</Text>
@@ -211,7 +214,8 @@ const CursosP = ({ navigation }) => {
           rating,
           criador,
           preco,
-          criadorNome
+          criadorNome,
+          local
         } = doc.data();
         list.push({
           id: doc.id,
@@ -220,7 +224,8 @@ const CursosP = ({ navigation }) => {
           rating,
           criador,
           preco,
-          criadorNome
+          criadorNome,
+          local
         });
       });
       setCursos(list);
@@ -247,7 +252,8 @@ const CursosP = ({ navigation }) => {
       if (
         dados.descricao.toLowerCase().includes(formatado) ||
         dados.nome.toLowerCase().includes(formatado) ||
-        dados.criadorNome.toLowerCase().includes(formatado)
+        dados.criadorNome.toLowerCase().includes(formatado) ||
+        dados.local.toLowerCase().includes(formatado)
       ) {
         return true;
       }
@@ -292,7 +298,7 @@ const CursosP = ({ navigation }) => {
         break;
       case "none":
         setCursos(listCursos);
-        console.log(listCursos);
+        // console.log(listCursos);
         break;
     }
     if (opcao != "fav" && opcao != "none") {
@@ -334,7 +340,7 @@ const CursosP = ({ navigation }) => {
           renderItem={renderItem}
         />
         <Button
-          onPress={() => navigation.navigate("CursosRegistrar")}
+          onPress={() => navigation.navigate("CursosRegistrarP")}
           style={styles.criar}
         >
           Criar um curso

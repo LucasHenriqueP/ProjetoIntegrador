@@ -11,16 +11,18 @@ import _ from "lodash";
 const RegistrarP = ({ navigation }) => {
   const [Curso, setCurso] = useState("");
   const [Preco, setPreco] = useState("R$0,00");
+  const [Local, setLocal] = useState("");
   const [Desc, setDesc] = useState("");
   const [modalLoading, setModalLoading] = useState(false);
 
   async function addCurso() {
     if (Curso && Desc) {
       setModalLoading(true);
-      Service.addCurso({ Curso, Desc, Preco });
+      Service.addCurso({ Curso, Desc, Preco, Local });
       setCurso("");
       setDesc("");
       setPreco("R$0,00");
+      setLocal("");
     } else {
       var campos = [];
       if (!Curso) campos.push("Sobrenome");
@@ -43,6 +45,7 @@ const RegistrarP = ({ navigation }) => {
       <MLoading ModalLoading={modalLoading} />
       <Input label={"Nome"} value={Curso} onChangeText={setCurso} />
       <Input label={"Descrição"} value={Desc} onChangeText={setDesc} />
+      <Input label={"Localização"} value={Local} onChangeText={setLocal} />
       <Input
         label={"Preço"}
         type={"money"}

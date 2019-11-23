@@ -16,23 +16,26 @@ import Loading from "../../components/Loading";
 import MLoading from "../../components/ModalLoading";
 import * as Service from "./Service";
 import * as Verify from "../../utils/verificaLogin";
+import firestore from "@react-native-firebase/firestore";
+
+const ref = firestore().collection("cursosPresenciais");
 
 const Page1 = ({ navigation }) => {
   // Set an loading state whilst Firebase connects
   const [loading, setLoading] = useState(true);
   //transferir para service e verificar, mudar toda a estrutura
   const [user, setUser] = useState(false);
-  const [Google, setGoogle] = useState(false);
   const [email, setEmail] = useState(false);
   const [ModalLoading, setModalLoading] = useState(false);
   const [Lat, setLat] = useState(-24.0417429);
   const [Long, setLong] = useState(-52.3839641);
+  const [Cursos, setCursos] = useState([]); // Initial empty array of Cursos
   const [marcadores, setMarcadores] = useState([]);
   // Handle user state changes
   function onAuthStateChanged(user) {
     setUser(user);
     if (loading) setLoading(false);
-    if (user && Verify.userVerified()) {
+    if (user) {
       showMessage({
         message: "Autenticado com sucesso!",
         type: "success",
@@ -50,24 +53,28 @@ const Page1 = ({ navigation }) => {
 
   async function carregaMarcadores() {
     var arraylocalizacoes = [];
+    var wait = false;
     // Ignorar esse erro
-    Geocoder.from("utfpr Campo Mourão")
-      .then(json => {
-        var location = json.results[0].geometry.location;
-        var localizacao = {
-          latlng: {
-            latitude: "",
-            longitude: ""
-          },
-          title: "teste1",
-          description: "teste2"
-        };
-        localizacao.latlng.latitude = location.lat;
-        localizacao.latlng.longitude = location.lng;
-        arraylocalizacoes.push(localizacao);
-      })
-      .catch(error => console.warn(error));
-    setMarcadores(arraylocalizacoes);
+    Cursos.forEach(curso => {
+      Geocoder.from(curso.local)
+        .then(json => {
+          var location = json.results[0].geometry.location;
+          var localizacao = {
+            key: curso.id,
+            latlng: {
+              latitude: "",
+              longitude: ""
+            },
+            title: curso.nome,
+            description: curso.descricao
+          };
+          localizacao.latlng.latitude = location.lat;
+          localizacao.latlng.longitude = location.lng;
+          arraylocalizacoes.push(localizacao);
+        })
+        .catch(error => console.warn(error));
+      setMarcadores(arraylocalizacoes);
+    });
   }
 
   async function requestLocationPermission() {
@@ -103,7 +110,7 @@ const Page1 = ({ navigation }) => {
       language: "pt-BR"
     });
 
-    if (user && !Verify.userVerified() && !email && !Google) {
+    if (user && !Verify.userVerified() && !email) {
       showMessage({
         message: "Não esqueça de verificar o seu email!",
         description: "Depois disso, é necessário relogar",
@@ -130,8 +137,24 @@ const Page1 = ({ navigation }) => {
       }
     });
 
-    carregaMarcadores();
+    return ref.onSnapshot(querySnapshot => {
+      const list = [];
+      querySnapshot.forEach(doc => {
+        const { nome, descricao, local } = doc.data();
+        list.push({
+          id: doc.id,
+          nome,
+          descricao,
+          local
+        });
+      });
+      setCursos(list);
+    });
   }, []);
+
+  useEffect(() => {
+    carregaMarcadores();
+  }, [Cursos]);
 
   if (loading) return <Loading />;
 
@@ -163,6 +186,7 @@ const Page1 = ({ navigation }) => {
       >
         {marcadores.map(marker => (
           <Marker
+            key={marker.key}
             coordinate={marker.latlng}
             title={marker.title}
             description={marker.description}

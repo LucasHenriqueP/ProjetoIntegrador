@@ -292,7 +292,7 @@ const cursos = ({ navigation }) => {
         break;
       case "none":
         setCursos(listCursos);
-        console.log(listCursos);
+        // console.log(listCursos);
         break;
     }
     if (opcao != "fav" && opcao != "none") {
