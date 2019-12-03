@@ -8,7 +8,7 @@ import auth from "@react-native-firebase/auth";
 import MLoading from "../../components/ModalLoading";
 import * as Service from "./Service";
 
-const Login = () => {
+const Login = ({ navigation }) => {
   const [Email, setEmail] = useState("");
   const [ModalLoading, setModalLoading] = useState(false);
 
@@ -34,8 +34,10 @@ const Login = () => {
       });
     } catch (e) {
       Service.catchErros(e);
+      return;
     }
     setModalLoading(false);
+    navigation.goBack();
     return;
   }
 

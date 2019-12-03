@@ -39,6 +39,7 @@ const Login = ({ navigation }) => {
 
   const signIn = async () => {
     try {
+      var valida = false;
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       GoogleSignin.getCurrentUser().then(async user => {
@@ -54,10 +55,13 @@ const Login = ({ navigation }) => {
         querySnapshot.forEach(doc => {
           if (doc.id == user.user.id) {
             navigation.navigate("Main");
+            valida = true;
             return;
           }
         });
-        navigation.navigate("Registrar", userInfo.user);
+        if (!valida) {
+          navigation.navigate("Registrar", userInfo.user);
+        }
       });
     } catch (error) {
       console.log(error);
@@ -117,11 +121,11 @@ const Login = ({ navigation }) => {
 
       setEmail("");
       setSenha("");
-        try {
-          await AsyncStorage.setItem("@ID", auth().currentUser.uid);
-        } catch (e) {
-          console.log("fudeu", e);
-        }
+      try {
+        await AsyncStorage.setItem("@ID", auth().currentUser.uid);
+      } catch (e) {
+        console.log("fudeu", e);
+      }
       navigation.navigate("Main");
     } catch (e) {
       Service.catchErros(e);
