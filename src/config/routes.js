@@ -16,6 +16,9 @@ import CursosEditarP from "../screens/CursosPresenciais/Editar";
 import CursosRegistrarP from "../screens/CursosPresenciais/Registrar";
 import User from "../screens/User/User";
 import CursosADM from "../screens/Admin/Cursos/Cursos";
+import CursosPADM from "../screens/Admin/CursosPresenciais/Cursos";
+import CursosPADMReg from "../screens/Admin/CursosPresenciais/Registrar";
+import CursosPADMEdit from "../screens/Admin/CursosPresenciais/Editar";
 import UsersADM from "../screens/Admin/Users/Users";
 import Login from "../screens/Login/Login";
 import Registrar from "../screens/Login/Registrar";
@@ -55,6 +58,48 @@ const SettingsStack = createStackNavigator(
       screen: CursosADM,
       navigationOptions: ({ navigation }) => ({
         title: "Lista de Cursos(Admin)",
+        headerStyle: {
+          backgroundColor: "#000000"
+        },
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+          fontSize: 18,
+          fontWeight: "bold"
+        }
+      })
+    },
+    CursosPADM: {
+      screen: CursosPADM,
+      navigationOptions: ({ navigation }) => ({
+        title: "Lista de Cursos Presenciais(Admin)",
+        headerStyle: {
+          backgroundColor: "#000000"
+        },
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+          fontSize: 18,
+          fontWeight: "bold"
+        }
+      })
+    },
+    CursosPADMReg: {
+      screen: CursosPADMReg,
+      navigationOptions: ({ navigation }) => ({
+        title: "Registrar Curso Presencial(Admin)",
+        headerStyle: {
+          backgroundColor: "#000000"
+        },
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+          fontSize: 18,
+          fontWeight: "bold"
+        }
+      })
+    },
+    CursosPADMEdit: {
+      screen: CursosPADMEdit,
+      navigationOptions: ({ navigation }) => ({
+        title: "Editar Curso Presencial(Admin)",
         headerStyle: {
           backgroundColor: "#000000"
         },

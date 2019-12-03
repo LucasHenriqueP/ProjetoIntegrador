@@ -11,16 +11,16 @@ import {
   Picker
 } from "react-native";
 import { Overlay, Input, Rating, Icon, SearchBar } from "react-native-elements";
-import Loading from "../../components/Loading";
-import MLoading from "../../components/ModalLoading";
+import Loading from "../../../components/Loading";
+import MLoading from "../../../components/ModalLoading";
 import { showMessage } from "react-native-flash-message";
 import * as Service from "./Service";
-import * as Login from "../../utils/verificaLogin";
+import * as Login from "../../../utils/verificaLogin";
 import _ from "lodash";
 
 const ref = Service.getRef();
 
-const cursos = ({ navigation }) => {
+const CursosP = ({ navigation }) => {
   //essa porra ta muito feia, certeza que to fazendo algo de errado
   const [Preco, setPreco] = useState("R$0,00");
   const [loading, setLoading] = useState(false); // Set loading to true on component mount
@@ -103,41 +103,25 @@ const cursos = ({ navigation }) => {
         <View style={styles.row}>
           <Text style={styles.cursoId}>Nome: {item.nome}</Text>
 
-          {/* se não for o criador do curso */}
-          {item.criador !== user && favs.indexOf(item.id) !== -1 && (
-            <TouchableOpacity onPress={() => unfavoritaCurso(item.id)}>
-              <Icon style={{ color: "red" }} name="star" type="font-awesome" />
+          <View style={styles.rowComponent}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("CursosPADMEdit", item)}
+            >
+              <Text style={styles.editarButtonText}>Editar </Text>
             </TouchableOpacity>
-          )}
-          {item.criador !== user && favs.indexOf(item.id) == -1 && (
-            <TouchableOpacity onPress={() => favoritaCurso(item.id)}>
-              <Icon
-                style={styles.editarButtonText}
-                name="star-o"
-                type="font-awesome"
-              />
+            <TouchableOpacity onPress={() => Service.removeCurso(item)}>
+              <Text style={styles.removerButtonText}>Remover</Text>
             </TouchableOpacity>
-          )}
-
-          {/* se for o criador do curso */}
-          {item.criador == user && (
-            <View style={styles.rowComponent}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("CursosEditar", item)}
-              >
-                <Text style={styles.editarButtonText}>Editar </Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => Service.removeCurso(item)}>
-                <Text style={styles.removerButtonText}>Remover</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+          </View>
         </View>
         <Text>
           Professor: <Text style={styles.curso}>{item.criadorNome}</Text>
         </Text>
         <Text>
           Descrição: <Text style={styles.curso}>{item.descricao}</Text>
+        </Text>
+        <Text>
+          Localização: <Text style={styles.curso}>{item.local}</Text>
         </Text>
         <Text>
           Preço: <Text style={styles.curso}>{item.preco}</Text>
@@ -211,7 +195,8 @@ const cursos = ({ navigation }) => {
           rating,
           criador,
           preco,
-          criadorNome
+          criadorNome,
+          local
         } = doc.data();
         list.push({
           id: doc.id,
@@ -220,7 +205,8 @@ const cursos = ({ navigation }) => {
           rating,
           criador,
           preco,
-          criadorNome
+          criadorNome,
+          local
         });
       });
       setCursos(list);
@@ -247,7 +233,8 @@ const cursos = ({ navigation }) => {
       if (
         dados.descricao.toLowerCase().includes(formatado) ||
         dados.nome.toLowerCase().includes(formatado) ||
-        dados.criadorNome.toLowerCase().includes(formatado)
+        dados.criadorNome.toLowerCase().includes(formatado) ||
+        dados.local.toLowerCase().includes(formatado)
       ) {
         return true;
       }
@@ -334,7 +321,7 @@ const cursos = ({ navigation }) => {
           renderItem={renderItem}
         />
         <Button
-          onPress={() => navigation.navigate("CursosRegistrar")}
+          onPress={() => navigation.navigate("CursosPADMReg")}
           style={styles.criar}
         >
           Criar um curso
@@ -440,4 +427,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default cursos;
+export default CursosP;

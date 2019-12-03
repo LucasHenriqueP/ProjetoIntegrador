@@ -1,18 +1,30 @@
+import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
-import React from "react";
-import {
-  ScrollView,
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity
-} from "react-native";
+import React, { useState, useEffect } from "react";
+import { ScrollView, View, StyleSheet, TouchableOpacity } from "react-native";
 import { Button } from "react-native-paper";
 import IOSIcon from "react-native-vector-icons/Ionicons";
 import { GoogleSignin } from "@react-native-community/google-signin";
 import AsyncStorage from "@react-native-community/async-storage";
 
+const ref = firestore().collection("admins");
+
 const SideMenu = ({ navigation }) => {
+  const [showADM, setShowADM] = useState(false);
+
+  useEffect(() => {
+    return ref.onSnapshot(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        const { id } = doc.data();
+        AsyncStorage.getItem("@ID").then(item => {
+          if (id == item) {
+            setShowADM(true);
+          }
+        });
+      });
+    });
+  }, []);
+
   async function sair() {
     try {
       await AsyncStorage.removeItem("@ID");
@@ -62,19 +74,30 @@ const SideMenu = ({ navigation }) => {
             >
               Cursos Presenciais
             </Button>
-            <Button
-              style={styles.navItemStyle}
-              onPress={() => navigation.navigate("CursosADM")}
-            >
-              CursosADM
-            </Button>
+            {showADM === true && (
+              <>
+                <Button
+                  style={styles.navItemStyle}
+                  onPress={() => navigation.navigate("CursosADM")}
+                >
+                  CursosADM
+                </Button>
 
-            <Button
-              style={styles.navItemStyle}
-              onPress={() => navigation.navigate("UsersADM")}
-            >
-              UsuáriosADM
-            </Button>
+                <Button
+                  style={styles.navItemStyle}
+                  onPress={() => navigation.navigate("CursosPADM")}
+                >
+                  CursosPresenciaisADM
+                </Button>
+
+                <Button
+                  style={styles.navItemStyle}
+                  onPress={() => navigation.navigate("UsersADM")}
+                >
+                  UsuáriosADM
+                </Button>
+              </>
+            )}
           </View>
         </View>
       </ScrollView>

@@ -220,7 +220,7 @@ const user = () => {
         <Text>
           Preço: <Text style={styles.curso}>{item.preco}</Text>
         </Text>
-        {/* <Rating imageSize={20} readonly startingValue={parseInt(item.rating)} /> */}
+        {/* <Rating imageSize={20} readonly startingValue={parseFloat(item.rating)} /> */}
         <TouchableOpacity
           onPress={() => showCriador(item.criador)}
           style={styles.criadorButton}

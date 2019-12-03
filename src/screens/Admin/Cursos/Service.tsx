@@ -43,41 +43,13 @@ export async function removeCurso(item) {
   }
 }
 
-export async function favoritaCurso(id, favs) {
-  let user = await Login.pegaID();
-  if (favs.indexOf(id) == -1) {
-    await firestore()
-      .collection("usuarios")
-      .doc(user)
-      // Caso for para deixar uma referência (não sei o que muda, mas ok né)
-      //                   firestore.FieldValue.arrayUnion(firestore().doc(`cursos/${id}`)));
-      // no banco vai ficar /cursos/id_aqui
-      // acho que é pra pegar o caminho absoluto mais fácil ???
-      .update("favoritos", firestore.FieldValue.arrayUnion(`${id}`));
-    var arr = [].concat(favs);
-    arr.push(id);
-    return arr;
-  }
-}
-
-export async function unfavoritaCurso(id, favs) {
-  let user = await Login.pegaID();
-  var arr = favs;
-  arr.splice(favs.indexOf(id), 1);
-  await firestore()
-    .collection("usuarios")
-    .doc(user)
-    .update("favoritos", firestore.FieldValue.arrayRemove(id));
-  return arr;
-}
-
 export async function modifyCurso(data) {
   const { ID, Curso, Desc, Rat, Preco } = data;
   await ref.doc(ID).set(
     {
       nome: Curso,
       descricao: Desc,
-      rating: parseInt(Rat),
+      rating: parseFloat(Rat),
       preco: Preco
     },
     { merge: true }

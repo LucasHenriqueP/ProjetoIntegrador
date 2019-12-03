@@ -1,5 +1,4 @@
 import firestore from "@react-native-firebase/firestore";
-import auth from "@react-native-firebase/auth";
 import React, { useState, useEffect } from "react";
 import { Button } from "react-native-paper";
 import {
@@ -7,8 +6,7 @@ import {
   FlatList,
   View,
   TouchableOpacity,
-  StyleSheet,
-  Alert
+  StyleSheet
 } from "react-native";
 import { Overlay, Input, Rating, Icon } from "react-native-elements";
 import { showMessage } from "react-native-flash-message";
@@ -21,7 +19,6 @@ import * as Login from "../../../utils/verificaLogin";
 const ref = Service.getRef();
 
 const cursos = () => {
-  //essa porra ta muito feia, certeza que to fazendo algo de errado
   const [ID, setID] = useState("");
   const [Curso, setCurso] = useState("");
   const [Preco, setPreco] = useState("R$0,00");
@@ -37,21 +34,6 @@ const cursos = () => {
   const [Sobrenome, setSobrenome] = useState("");
   const [Celular, setCelular] = useState("");
   const [Email, setEmail] = useState("");
-  const [favs, setFavs] = useState([]);
-
-  async function favoritaCurso(id) {
-    setModalLoading(true);
-    let arr = await Service.favoritaCurso(id, favs);
-    setFavs(arr);
-    setModalLoading(false);
-  }
-
-  async function unfavoritaCurso(id) {
-    setModalLoading(true);
-    let arr = await Service.unfavoritaCurso(id, favs);
-    setFavs(arr);
-    setModalLoading(false);
-  }
 
   async function showCriador(criador) {
     setModalLoading(true);
@@ -78,6 +60,7 @@ const cursos = () => {
   function editaCurso(item) {
     setID(item.id);
     setCurso(item.nome);
+    setRating(item.rating.toString());
     setDesc(item.descricao);
     setPreco(item.preco);
     setModalEditar(true);
@@ -89,7 +72,7 @@ const cursos = () => {
     const data = {
       ID: ID,
       Curso: Curso,
-      Rat: Rat,
+      Rat: parseFloat(Rat),
       Desc: Desc,
       Preco: Preco
     };
@@ -109,26 +92,6 @@ const cursos = () => {
         <View style={styles.row}>
           <Text style={styles.cursoId}>Nome: {item.nome}</Text>
           <View style={styles.rowComponent}>
-            {/* se for favorito */}
-            {favs.indexOf(item.id) !== -1 && (
-              <TouchableOpacity onPress={() => unfavoritaCurso(item.id)}>
-                <Icon
-                  style={styles.editarButtonText}
-                  name="star"
-                  type="font-awesome"
-                />
-              </TouchableOpacity>
-            )}
-            {/* se NÃO for favorito */}
-            {favs.indexOf(item.id) == -1 && (
-              <TouchableOpacity onPress={() => favoritaCurso(item.id)}>
-                <Icon
-                  style={styles.editarButtonText}
-                  name="star-o"
-                  type="font-awesome"
-                />
-              </TouchableOpacity>
-            )}
             <TouchableOpacity onPress={() => editaCurso(item)}>
               <Text style={styles.editarButtonText}>Editar </Text>
             </TouchableOpacity>
@@ -146,7 +109,7 @@ const cursos = () => {
         <Text>
           Preço: <Text style={styles.curso}>{item.preco}</Text>
         </Text>
-        <Rating imageSize={20} readonly startingValue={parseInt(item.rating)} />
+        <Rating imageSize={20} readonly startingValue={parseFloat(item.rating)} />
         <TouchableOpacity
           onPress={() => showCriador(item.criador)}
           style={styles.criadorButton}
@@ -194,14 +157,6 @@ const cursos = () => {
   });
 
   useEffect(() => {
-    firestore()
-      .collection("usuarios")
-      .doc(user)
-      .get()
-      .then(function(doc) {
-        const { favoritos } = doc.data();
-        setFavs(favoritos.toString());
-      });
     return ref.onSnapshot(querySnapshot => {
       const list = [];
       querySnapshot.forEach(doc => {
