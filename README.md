@@ -8,44 +8,41 @@ Repositorio Para a disciplina BCC35C
 
 Um breve tutorial sobre o Travis CI pode ser encontrado dentro da pasta _travis_, ou clicando [aqui](https://github.com/LucasHenriqueP/ProjetoIntegrador/tree/master/tutorial).
 
-
 # To-do
 
 1. Procurar ferramentas/frameworks de teste react-native/typescript/javascript.
 2. Montar ambiente com ferramentas de teste.
 
-
 # Requisitos
 
 Descrição: O Software deverá possibilitar que pessoas, anunciem e procurem cursos/aulas. Os usuários poderão procuram cursos de acordo com critérios específicos, como preço, faixa de preço, distância, descrição, professor, e também poderá filtrar por cursos específicos como por exemplo “Aulas de Violão”.
 
-
 **Funcionalidades**
 
 1. O Sistema deverá permite que novos usuários se cadastrem utilizando uma conta do Facebook, Google, ou informando
-    *   Nome
-    *   Email
-    *   Nome de usuário(Talvez)
-    *   Senha
-    *   Data de nascimento
-    *   Descrição(Opcional)
+   - Nome
+   - Email
+   - Nome de usuário(Talvez)
+   - Senha
+   - Data de nascimento
+   - Descrição(Opcional)
 2. O Sistema deverá permitir que os usuários recuperem/troquem sua senha.
 3. O Sistema deverá permitir que os usuários adicionem cursos aos seus curso favoritos.
 4. O Sistema deverá permitir que os usuários avaliem seus cursos comprados.
 5. O Sistema deverá permitir que os tutores/professores mandem mensagens para seus alunos.
 6. O Sistema deverá permitir que os usuários busquem por cursos específicos.
 7. O Sistema deverá permitir que os usuários filtrem os cursos por meio de
-    *   Faixa de preço.
-    *   Distancia.
-    *   Avaliação.
-    *   Categoria 
-8.  O Sistema deverá permitir que os usuários possam criar cursos informando.
-    *   Titulo do Curso.
-    *   Descrição do Curso.
-    *   Disponibilidade: Remoto, localização fixa, deslocamento do professor.
-    *   Quantidade de hora/aula.
-    *   Preço por hora/aula ou preço total do curso.
-    *   Selecionar Categoria do curso.
+   - Faixa de preço.
+   - Distancia.
+   - Avaliação.
+   - Categoria
+8. O Sistema deverá permitir que os usuários possam criar cursos informando.
+   - Titulo do Curso.
+   - Descrição do Curso.
+   - Disponibilidade: Remoto, localização fixa, deslocamento do professor.
+   - Quantidade de hora/aula.
+   - Preço por hora/aula ou preço total do curso.
+   - Selecionar Categoria do curso.
 9. O sistema deverá permitir que um usuário administrador possa excluir usuários do sistema.
 10. O Sistema deverá permitir que um usuário administrador possa excluir cursos do sistema.
 
@@ -63,3 +60,14 @@ Descrição: O Software deverá possibilitar que pessoas, anunciem e procurem cu
 10. Eu como professor quero falar com alunos individualmente, para poder ajudar individualmente meu alunos.
 11. Eu como usuário administrador quero excluir um usuário pois ele infringiu alguma regra do sistema.
 12. Eu como usuário administrador quero excluir um curso pois ele infringiu alguma regra do sistema.
+
+# Dívida Tecnica
+
+- Base de dados será excluída no dia 19/12/2019
+- Chaves de API serão excluídas no dia 19/12/2019
+
+**Explicação**
+
+No dia 19 de dezembro de 2019, a base de dados no firebase, e todas as chaves de API ligadas a ela serão excluídas imediatamente, já que elas estão expostas para todo mundo ver, não queremos ninguém se aproveitando de tais chaves.
+
+Sendo assim, depois desse fatídico dia, o nosso aplicativo encerrará a sua atividade por tempo indeterminado.
