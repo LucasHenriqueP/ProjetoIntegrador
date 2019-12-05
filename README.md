@@ -2,11 +2,39 @@
 
 # Projeto Integrador
 
-Repositorio Para a disciplina BCC35C
+Repositorio Para a disciplina BCC35C, onde desenvolvemos um aplicativo de cursos, é possível criar, se inscrever e avaliar um curso, veja mais sobre as funcionalidades mais abaixo.
 
 # Tutorial Travis CI
 
 Um breve tutorial sobre o Travis CI pode ser encontrado dentro da pasta _travis_, ou clicando [aqui](https://github.com/LucasHenriqueP/ProjetoIntegrador/tree/master/tutorial).
+
+# Como executar o nosso projeto?
+
+Primeiramente é necessário verificar duas coisas: Você está tentando rodar o projeto **ANTES** do dia 19/12/2019(para saber mais sobre isso, avance para o fim da página), e que você possui o SDK do Android instalado e configurada em seu computador, [siga este tutorial para saber mais!](https://docs.rocketseat.dev/ambiente-react-native/introducao)
+
+Após isso, é necessário apenas acessar a pasta pelo terminal, rodar o seguinte comando (aconselhamos utilizar o yarn pois ele é mais rápido na instalação de dependências):
+
+    yarn install
+
+Este comando irá instalar todas as dependências atuais do projeto, caso você não tenha o yarn instalado, instale-o com o npm:
+
+    sudo npm install -g yarn
+
+Caso não tenha o npm instalado, [acesse este link](https://nodejs.org/en/download/), recomendamos instalar a versão mais recente
+
+Após instalar as dependências, temos duas escolhas, instalar o aplicativo em modo de desenvolvimento, ou em modo de produção, ambos funcionam perfeitamente, porém, o ambiente de produção conta com ganhos de desempenho enormes, recomendamos instalar o ambiente de produção!
+
+Para instalar o ambiente de desenvolvimento, primeiramente conecte o seu celular ao computador, [siga este tutorial](https://docs.rocketseat.dev/ambiente-react-native/usb/android), porém troque o último comando, caso queira o ambiente de desenvolvimento, primeiro instale o aplicativo no celular:
+
+    yarn run-android
+
+e logo em seguida inicie o servidor:
+
+    yarn start
+
+Caso queira o ambiente de produção:
+
+    yarn release
 
 # To-do
 
@@ -71,3 +99,5 @@ Descrição: O Software deverá possibilitar que pessoas, anunciem e procurem cu
 No dia 19 de dezembro de 2019, a base de dados no firebase, e todas as chaves de API ligadas a ela serão excluídas imediatamente, já que elas estão expostas para todo mundo ver, não queremos ninguém se aproveitando de tais chaves.
 
 Sendo assim, depois desse fatídico dia, o nosso aplicativo encerrará a sua atividade por tempo indeterminado.
+
+Caso queira rodar o projeto depois disso, entre em contato comigo [pelo github](https://github.com/henriko202), ou por [email](mailto:henriko.foz@gmail.com) que te explicarei melhor!
