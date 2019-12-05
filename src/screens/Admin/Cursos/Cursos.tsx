@@ -6,7 +6,8 @@ import {
   FlatList,
   View,
   TouchableOpacity,
-  StyleSheet
+  StyleSheet,
+  Linking
 } from "react-native";
 import { Overlay, Input, Rating, Icon } from "react-native-elements";
 import { showMessage } from "react-native-flash-message";
@@ -35,12 +36,14 @@ const cursos = () => {
   const [Celular, setCelular] = useState("");
   const [Email, setEmail] = useState("");
 
-  async function showCriador(criador) {
+  async function showCriador(item) {
     setModalLoading(true);
+    var criador = item.criador;
     const doc = await Service.pegaCriador(criador);
     if (doc) {
       setModalVer(true);
       const { nome, sobrenome, celular, email } = doc;
+      setCurso(item.nome);
       setNome(nome);
       setSobrenome(sobrenome);
       setCelular(celular);
@@ -109,9 +112,13 @@ const cursos = () => {
         <Text>
           Preço: <Text style={styles.curso}>{item.preco}</Text>
         </Text>
-        <Rating imageSize={20} readonly startingValue={parseFloat(item.rating)} />
+        <Rating
+          imageSize={20}
+          readonly
+          startingValue={parseFloat(item.rating)}
+        />
         <TouchableOpacity
-          onPress={() => showCriador(item.criador)}
+          onPress={() => showCriador(item)}
           style={styles.criadorButton}
         >
           <Text style={styles.criadorButtonText}>Criador</Text>
@@ -288,8 +295,25 @@ const cursos = () => {
             <Text>Sobrenome: {Sobrenome}</Text>
             <Text>Email: {Email}</Text>
             <Text>Celular: {Celular}</Text>
-            <TouchableOpacity style={styles.criadorButton}>
-              <Text>Enviar Mensagem</Text>
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(
+                  `whatsapp://send?text=Olá ${Nome}, sou um administrador do µCursos e gostaria de conversar melhor sobre o seu curso "${Curso}"&phone=+55${Celular}`
+                );
+              }}
+              style={styles.criadorButton}
+            >
+              <Text>Enviar Mensagem no Whatsapp</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.criadorButton}
+              onPress={() => {
+                Linking.openURL(
+                  `mailto:${Email}?subject=Sobre o seu curso "${Curso}" no µCursos&body=Olá, sou um administrador do µCursos gostaria de conversar melhor sobre o seu curso, por favor entre em contato comigo!`
+                );
+              }}
+            >
+              <Text>Enviar Email</Text>
             </TouchableOpacity>
           </View>
         </Overlay>
