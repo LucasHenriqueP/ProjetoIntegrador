@@ -81,9 +81,9 @@ const Page1 = ({ navigation }) => {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
-          title: "uCursos permissão para localização",
+          title: "µCursos permissão para localização",
           message:
-            "uCUrsos necessita de permissão de acesso a sua localização " +
+            "µCursos necessita de permissão de acesso a sua localização " +
             "para encontrar os cursos mais perto de você.",
           buttonNeutral: "Ask Me Later",
           buttonNegative: "Cancel",

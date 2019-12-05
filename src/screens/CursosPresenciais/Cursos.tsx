@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  Picker
+  Picker,
+  Linking
 } from "react-native";
 import { Overlay, Input, Rating, Icon, SearchBar } from "react-native-elements";
 import Loading from "../../components/Loading";
@@ -25,6 +26,7 @@ const CursosP = ({ navigation }) => {
   const [Preco, setPreco] = useState("R$0,00");
   const [loading, setLoading] = useState(false); // Set loading to true on component mount
   const [Cursos, setCursos] = useState([]); // Initial empty array of Cursos
+  const [Curso, setCurso] = useState([]); // Initial empty array of Cursos
   const [ModalVer, setModalVer] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
   const [Nome, setNome] = useState("");
@@ -52,12 +54,14 @@ const CursosP = ({ navigation }) => {
     setModalLoading(false);
   }
 
-  async function showCriador(criador) {
+  async function showCriador(item) {
     setModalLoading(true);
+    var criador = item.criador;
     const doc = await Service.pegaCriador(criador);
     if (doc) {
       setModalVer(true);
       const { nome, sobrenome, celular, email } = doc;
+      setCurso(item.nome);
       setNome(nome);
       setSobrenome(sobrenome);
       setCelular(celular);
@@ -145,9 +149,13 @@ const CursosP = ({ navigation }) => {
         <Text>
           Preço: <Text style={styles.curso}>{item.preco}</Text>
         </Text>
-        <Rating imageSize={20} readonly startingValue={parseFloat(item.rating)} />
+        <Rating
+          imageSize={20}
+          readonly
+          startingValue={parseFloat(item.rating)}
+        />
         <TouchableOpacity
-          onPress={() => showCriador(item.criador)}
+          onPress={() => showCriador(item)}
           style={styles.criadorButton}
         >
           <Text style={styles.criadorButtonText}>Criador</Text>
@@ -357,8 +365,25 @@ const CursosP = ({ navigation }) => {
             <Text>Sobrenome: {Sobrenome}</Text>
             <Text>Email: {Email}</Text>
             <Text>Celular: {Celular}</Text>
-            <TouchableOpacity style={styles.criadorButton}>
-              <Text>Enviar Mensagem</Text>
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(
+                  `whatsapp://send?text=Olá ${Nome}, vi o seu curso "${Curso}" no µCursos e gostaria de conversar melhor!&phone=+55${Celular}`
+                );
+              }}
+              style={styles.criadorButton}
+            >
+              <Text>Enviar Mensagem no Whatsapp</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.criadorButton}
+              onPress={() => {
+                Linking.openURL(
+                  `mailto:${Email}?subject=Sobre o seu curso "${Curso}" no µCursos&body=Olá, gostaria de conversar melhor sobre o seu curso, por favor entre em contato comigo!`
+                );
+              }}
+            >
+              <Text>Enviar Email</Text>
             </TouchableOpacity>
           </View>
         </Overlay>
