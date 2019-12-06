@@ -1,22 +1,25 @@
 import firestore from "@react-native-firebase/firestore";
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet,TouchableOpacity, FlatList } from "react-native";
+import { View, StyleSheet, TouchableOpacity, FlatList } from "react-native";
 import { Input, Icon, Button, Text } from "react-native-elements";
 import { TextInputMask } from "react-native-masked-text";
 import * as Login from "../../utils/verificaLogin";
-import { showMessage} from "react-native-flash-message";
-import {Container, Header, Content, Tab, Tabs} from 'native-base';
+import { showMessage } from "react-native-flash-message";
+import { Container, Header, Content, Tab, Tabs } from "native-base";
 import * as Service from "./Service";
+import Cursos from "../Cursos/Cursos";
+import CursosPresenciais from "../CursosPresenciais/Cursos";
 const ref = firestore().collection("usuarios");
 const refCursos = firestore().collection("cursos");
 
-const user = () => {
+const user = ({ navigation }) => {
   const [modalLoading, setModalLoading] = useState(false);
   const [Nome, setNome] = useState("");
   const [Sobrenome, setSobrenome] = useState("");
   const [Celular, setCelular] = useState("");
   const [Email, setEmail] = useState("");
   const [favs, setFavs] = useState([]);
+  const [oferecidos, setOferecidos] = useState([]);
   const [historico, setHistorico] = useState([]);
   const [IsEditable, setIsEditable] = useState(true);
   const [ModalVer, setModalVer] = useState(false);
@@ -27,17 +30,20 @@ const user = () => {
       let usuarioAtual = ref.doc(user);
       usuarioAtual.get().then(doc => {
         console.log(doc.data());
-        
+
         const { nome, sobrenome, email, celular } = doc.data();
         setNome(nome);
         setSobrenome(sobrenome);
         setCelular(celular);
         setEmail(email);
-        let { favoritos, historico } = doc.data();
+        let { favoritos, historico, cursosOferecidos } = doc.data();
         console.log(favoritos, historico);
-        
+
         if (!favoritos) {
           favoritos = [];
+        }
+        if (!cursosOferecidos) {
+          cursosOferecidos = [];
         }
         if (!historico) {
           historico = [];
@@ -48,13 +54,14 @@ const user = () => {
         });
         setHistorico(arr);
         setFavs(favoritos);
+        setOferecidos(cursosOferecidos);
       });
     });
-     refCursos.onSnapshot(querySnapshot => {
+    refCursos.onSnapshot(querySnapshot => {
       const listFav = [];
       const listHist = [];
-      console.log({favs});
-      
+      console.log({ favs });
+
       querySnapshot.forEach(doc => {
         const {
           id,
@@ -65,10 +72,10 @@ const user = () => {
           preco,
           criadorNome
         } = doc.data();
-        favs.forEach(f => console.log(f))
-        if(favs.some((favoritos) => favoritos.id == id)){
+        favs.forEach(f => console.log(f));
+        if (favs.some(favoritos => favoritos.id == id)) {
           console.log("Tem historico");
-          
+
           listFav.push({
             id: doc.id,
             nome,
@@ -79,7 +86,7 @@ const user = () => {
             criadorNome
           });
         }
-        if(historico.some((histo) => histo.id == id)){
+        if (historico.some(histo => histo.id == id)) {
           listHist.push({
             id: doc.id,
             nome,
@@ -90,7 +97,6 @@ const user = () => {
             criadorNome
           });
         }
-
       });
       setCursosFavs(listFav);
       setCursosHist(listHist);
@@ -111,7 +117,6 @@ const user = () => {
     setFavs(arr);
     setModalLoading(false);
   }
-
 
   async function showCriador(criador) {
     setModalLoading(true);
@@ -157,33 +162,29 @@ const user = () => {
     });
   }
 
-
-
-
   const changeEditable = () => {
     setIsEditable(!IsEditable);
   };
 
-  const editarUsuario =() =>{
+  const editarUsuario = () => {
     Login.pegaID().then(user => {
       let usuarioAtual = ref.doc(user);
-      usuarioAtual.get().then(doc =>{
+      usuarioAtual.get().then(doc => {
         let dados = doc.data();
         dados.nome = Nome;
         dados.sobrenome = Sobrenome;
         dados.celular = Celular;
-        usuarioAtual.set(dados).then(()=>{
+        usuarioAtual.set(dados).then(() => {
           showMessage({
             message: "Atualizado com sucesso!",
             type: "success",
             icon: "success",
             duration: 2500
           });
-        })
-      })
-    }); 
-  }
-
+        });
+      });
+    });
+  };
 
   function renderItem(item) {
     item = item.item;
@@ -209,7 +210,6 @@ const user = () => {
           )}
 
           {/* se for o criador do curso */}
-
         </View>
         <Text>
           Professor: <Text style={styles.curso}>{item.criadorNome}</Text>
@@ -252,64 +252,106 @@ const user = () => {
   return (
     <Container>
       <Tabs initialPage={0}>
-          <Tab heading="Informações Pessoais">
-    <View style={styles.container}>
-      <Text h1 style={styles.headerText}>
-        Informações do usuario
-      </Text>
-      <Input
-        onChangeText={e => setNome(e)}
-        label="Nome"
-        value={Nome}
-        disabled={IsEditable}
-        rightIcon={
-          <Icon name="edit" type="material" onPress={changeEditable} />
-        }
-      />
-      <Input
-        onChangeText={e => setSobrenome(e)}
-        label="Sobrenome"
-        value={Sobrenome}
-        disabled={IsEditable}
-        rightIcon={
-          <Icon name="edit" type="material" onPress={changeEditable} />
-        }
-      />
+        <Tab heading="Informações Pessoais">
+          <View style={styles.container}>
+            <Text h1 style={styles.headerText}>
+              Informações do usuario
+            </Text>
+            <Input
+              onChangeText={e => setNome(e)}
+              label="Nome"
+              value={Nome}
+              disabled={IsEditable}
+              rightIcon={
+                <Icon name="edit" type="material" onPress={changeEditable} />
+              }
+            />
+            <Input
+              onChangeText={e => setSobrenome(e)}
+              label="Sobrenome"
+              value={Sobrenome}
+              disabled={IsEditable}
+              rightIcon={
+                <Icon name="edit" type="material" onPress={changeEditable} />
+              }
+            />
 
-      <Input
-        onChangeText={e => setCelular(e)}
-        label="Telefone"
-        options={{
-          maskType: "BRL",
-          withDDD: true,
-          dddMask: "(99) "
-        }}
-        type={"cel-phone"}
-        keyboardType="phone-pad"
-        value={Celular}
-        inputComponent={TextInputMask}
-        disabled={IsEditable}
-        rightIcon={
-          <Icon name="edit" type="material" onPress={changeEditable} />
-        }
-      />
+            <Input
+              onChangeText={e => setCelular(e)}
+              label="Telefone"
+              options={{
+                maskType: "BRL",
+                withDDD: true,
+                dddMask: "(99) "
+              }}
+              type={"cel-phone"}
+              keyboardType="phone-pad"
+              value={Celular}
+              inputComponent={TextInputMask}
+              disabled={IsEditable}
+              rightIcon={
+                <Icon name="edit" type="material" onPress={changeEditable} />
+              }
+            />
 
-      <Input label="Email" value={Email} disabled={true} />
-      <Button buttonStyle={styles.botaoAtualizar} title="Atualizar" disabled={IsEditable} onPress={editarUsuario}/>
-    </View>
-    </Tab>
-    <Tab heading="Historico de Cursos">
-       
-    <FlatList
-          contentContainerStyle={styles.list}
-          style={{ flex: 1 }}
-          data={cursosHist}
-          keyExtractor={item => item.id}
-          renderItem={renderItem}
-        />
-    </Tab>
-    <Tab heading="Cursos Favoritos"></Tab>
-    </Tabs>
+            <Input label="Email" value={Email} disabled={true} />
+            <Button
+              buttonStyle={styles.botaoAtualizar}
+              title="Atualizar"
+              disabled={IsEditable}
+              onPress={editarUsuario}
+            />
+          </View>
+        </Tab>
+        <Tabs heading="Historico de Cursos">
+          <Tab heading="Online">
+            <Cursos
+              navigation={navigation}
+              userCursos={cursosHist}
+              isCriador={false}
+            />
+          </Tab>
+          <Tab heading="Presenciais">
+            <CursosPresenciais
+              navigation={navigation}
+              userCursos={cursosHist}
+              isCriador={false}
+            />
+          </Tab>
+        </Tabs>
+        <Tabs heading="Cursos Favoritos">
+          <Tab heading="Online">
+            <Cursos
+              navigation={navigation}
+              userCursos={favs}
+              isCriador={false}
+            />
+          </Tab>
+          <Tab heading="Presenciais">
+            <CursosPresenciais
+              navigation={navigation}
+              userCursos={favs}
+              isCriador={false}
+            />
+          </Tab>
+        </Tabs>
+        <Tabs heading="Cursos Oferecidos">
+          <Tab heading="Online">
+            <Cursos
+              navigation={navigation}
+              userCursos={oferecidos}
+              isCriador={true}
+            />
+          </Tab>
+          <Tab heading="Presenciais">
+            <CursosPresenciais
+              navigation={navigation}
+              userCursos={oferecidos}
+              isCriador={true}
+            />
+          </Tab>
+        </Tabs>
+      </Tabs>
     </Container>
   );
 };
@@ -317,7 +359,7 @@ const user = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f6b93b",
+    backgroundColor: "#f6b93b"
   },
   containerBotao: {
     flex: 1,
@@ -341,7 +383,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333"
   },
-    curso: {
+  curso: {
     fontSize: 16,
     color: "#999",
     marginTop: 5,
@@ -385,7 +427,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start"
-  },
+  }
 });
 
 export default user;

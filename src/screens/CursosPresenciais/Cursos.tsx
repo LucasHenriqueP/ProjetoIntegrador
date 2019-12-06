@@ -21,7 +21,7 @@ import _ from "lodash";
 
 const ref = Service.getRef();
 
-const CursosP = ({ navigation }) => {
+const CursosP = ({ navigation, userCursos, isCriador }) => {
   //essa porra ta muito feia, certeza que to fazendo algo de errado
   const [Preco, setPreco] = useState("R$0,00");
   const [loading, setLoading] = useState(false); // Set loading to true on component mount
@@ -52,6 +52,10 @@ const CursosP = ({ navigation }) => {
     let arr = await Service.unfavoritaCurso(id, favs);
     setFavs(arr);
     setModalLoading(false);
+  }
+
+  async function mandaEmail(id) {
+    console.log(id);
   }
 
   async function showCriador(item) {
@@ -102,6 +106,17 @@ const CursosP = ({ navigation }) => {
 
   function renderItem(item) {
     item = item.item;
+    if (userCursos) {
+      let verifica = false;
+      userCursos.forEach(valor => {
+        if (item.id === valor) {
+          verifica = true;
+        }
+      });
+      if (!verifica) {
+        return;
+      }
+    }
     return (
       <View style={styles.cursoContainer}>
         <View style={styles.row}>
@@ -160,6 +175,16 @@ const CursosP = ({ navigation }) => {
         >
           <Text style={styles.criadorButtonText}>Criador</Text>
         </TouchableOpacity>
+        {isCriador && (
+          <TouchableOpacity
+            onPress={() => mandaEmail(item.id)}
+            style={styles.criadorButton}
+          >
+            <Text style={styles.criadorButtonText}>
+              Mandar E-mail para todos os alunos
+            </Text>
+          </TouchableOpacity>
+        )}
         {item.criador !== user && historico.indexOf(item.id) == -1 && (
           <TouchableOpacity
             onPress={() => inscreverse(item.id)}

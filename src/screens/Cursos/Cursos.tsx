@@ -7,11 +7,10 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   Picker,
   Linking
 } from "react-native";
-import { Overlay, Input, Rating, Icon, SearchBar } from "react-native-elements";
+import { Overlay, Rating, Icon, SearchBar } from "react-native-elements";
 import Loading from "../../components/Loading";
 import MLoading from "../../components/ModalLoading";
 import { showMessage } from "react-native-flash-message";
@@ -21,8 +20,7 @@ import _ from "lodash";
 
 const ref = Service.getRef();
 
-const cursos = ({ navigation }) => {
-  //essa porra ta muito feia, certeza que to fazendo algo de errado
+const Cursos = ({ navigation, userCursos, isCriador }) => {
   const [Preco, setPreco] = useState("R$0,00");
   const [loading, setLoading] = useState(false); // Set loading to true on component mount
   const [Cursos, setCursos] = useState([]); // Initial empty array of Cursos
@@ -52,6 +50,18 @@ const cursos = ({ navigation }) => {
     let arr = await Service.unfavoritaCurso(id, favs);
     setFavs(arr);
     setModalLoading(false);
+  }
+
+  async function mandaEmail(id) {
+    console.log(id);
+    let usuarios = [];
+    await firestore()
+      .collection("usuarios")
+      .get()
+      .then(async function(doc) {
+          // const { email } = doc;
+          // usuarios.push(email);
+      });
   }
 
   async function showCriador(item) {
@@ -101,6 +111,17 @@ const cursos = ({ navigation }) => {
 
   function renderItem(item) {
     item = item.item;
+    if (userCursos) {
+      let verifica = false;
+      userCursos.forEach(valor => {
+        if (item.id === valor) {
+          verifica = true;
+        }
+      });
+      if (!verifica) {
+        return;
+      }
+    }
     return (
       <View style={styles.cursoContainer}>
         <View style={styles.row}>
@@ -156,6 +177,16 @@ const cursos = ({ navigation }) => {
         >
           <Text style={styles.criadorButtonText}>Criador</Text>
         </TouchableOpacity>
+        {isCriador && (
+          <TouchableOpacity
+            onPress={() => mandaEmail(item.id)}
+            style={styles.criadorButton}
+          >
+            <Text style={styles.criadorButtonText}>
+              Mandar E-mail para todos os alunos
+            </Text>
+          </TouchableOpacity>
+        )}
         {item.criador !== user && historico.indexOf(item.id) == -1 && (
           <TouchableOpacity
             onPress={() => inscreverse(item.id)}
@@ -464,4 +495,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default cursos;
+export default Cursos;
