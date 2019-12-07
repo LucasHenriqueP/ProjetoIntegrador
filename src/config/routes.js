@@ -23,6 +23,7 @@ import UsersADM from "../screens/Admin/Users/Users";
 import Login from "../screens/Login/Login";
 import Registrar from "../screens/Login/Registrar";
 import ResetaSenha from "../screens/Login/ResetaSenha";
+import Alunos from "../screens/Alunos/Alunos";
 
 const SettingsStack = createStackNavigator(
   {
@@ -114,6 +115,20 @@ const SettingsStack = createStackNavigator(
       screen: UsersADM,
       navigationOptions: ({ navigation }) => ({
         title: "Lista de Usuários(Admin)",
+        headerStyle: {
+          backgroundColor: "#000000"
+        },
+        headerTintColor: "#FFF",
+        headerTitleStyle: {
+          fontSize: 18,
+          fontWeight: "bold"
+        }
+      })
+    },
+    Alunos: {
+      screen: Alunos,
+      navigationOptions: ({ navigation }) => ({
+        title: "Lista de Alunos",
         headerStyle: {
           backgroundColor: "#000000"
         },

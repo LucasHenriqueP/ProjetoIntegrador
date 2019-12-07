@@ -93,6 +93,9 @@ Descrição: O Software deverá possibilitar que pessoas, anunciem e procurem cu
 
 - Base de dados será excluída no dia 19/12/2019
 - Chaves de API serão excluídas no dia 19/12/2019
+- Não é feita a verificação de email antes de o usuário utilizar o aplicativo
+- Login pelo facebook não foi implementado
+- Não foram implementados testes automatizados
 
 **Explicação**
 

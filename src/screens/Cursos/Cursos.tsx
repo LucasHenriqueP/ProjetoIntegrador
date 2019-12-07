@@ -52,16 +52,72 @@ const Cursos = ({ navigation, userCursos, isCriador }) => {
     setModalLoading(false);
   }
 
-  async function mandaEmail(id) {
-    console.log(id);
+  async function mandaEmail(id, curso) {
     let usuarios = [];
     await firestore()
       .collection("usuarios")
       .get()
       .then(async function(doc) {
-          // const { email } = doc;
-          // usuarios.push(email);
+        doc.forEach(item => {
+          const { historico, email } = item.data();
+          if (historico) {
+            historico.forEach(dado => {
+              if (dado.id === id) {
+                if (!usuarios.includes(email)) {
+                  usuarios.push(email);
+                }
+              }
+            });
+          }
+        });
       });
+    if (usuarios.length > 0) {
+      Linking.openURL(
+        `mailto:${usuarios}?subject=Atenção alunos do "${curso}", tenho um comunicado!&body=Olá alunos, tenho um comunicado a fazer para vocês.\n`
+      );
+    } else {
+      showMessage({
+        message: "Ocorreu um erro:",
+        description: "Não existem alunos cadastrados no curso!",
+        type: "warning",
+        icon: "warning",
+        duration: 2500
+      });
+    }
+  }
+
+  async function listaAlunos(id, curso) {
+    setModalLoading(true);
+    let usuarios = [];
+    await firestore()
+      .collection("usuarios")
+      .get()
+      .then(async function(doc) {
+        doc.forEach(item => {
+          const { historico } = item.data();
+          if (historico) {
+            historico.forEach(dado => {
+              if (dado.id === id) {
+                if (!usuarios.includes(item.id)) {
+                  usuarios.push(item.id);
+                }
+              }
+            });
+          }
+        });
+      });
+    setModalLoading(false);
+    if (usuarios.length > 0) {
+      navigation.navigate("Alunos", { curso, usuarios });
+    } else {
+      showMessage({
+        message: "Ocorreu um erro:",
+        description: "Não existem alunos cadastrados no curso!",
+        type: "warning",
+        icon: "warning",
+        duration: 2500
+      });
+    }
   }
 
   async function showCriador(item) {
@@ -179,12 +235,20 @@ const Cursos = ({ navigation, userCursos, isCriador }) => {
         </TouchableOpacity>
         {isCriador && (
           <TouchableOpacity
-            onPress={() => mandaEmail(item.id)}
+            onPress={() => mandaEmail(item.id, item.nome)}
             style={styles.criadorButton}
           >
             <Text style={styles.criadorButtonText}>
               Mandar E-mail para todos os alunos
             </Text>
+          </TouchableOpacity>
+        )}
+        {isCriador && (
+          <TouchableOpacity
+            onPress={() => listaAlunos(item.id, item.nome)}
+            style={styles.criadorButton}
+          >
+            <Text style={styles.criadorButtonText}>Lista de alunos</Text>
           </TouchableOpacity>
         )}
         {item.criador !== user && historico.indexOf(item.id) == -1 && (

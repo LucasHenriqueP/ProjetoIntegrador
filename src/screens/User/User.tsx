@@ -29,7 +29,7 @@ const user = ({ navigation }) => {
     Login.pegaID().then(user => {
       let usuarioAtual = ref.doc(user);
       usuarioAtual.get().then(doc => {
-        console.log(doc.data());
+        // console.log(doc.data());
 
         const { nome, sobrenome, email, celular } = doc.data();
         setNome(nome);
@@ -37,7 +37,7 @@ const user = ({ navigation }) => {
         setCelular(celular);
         setEmail(email);
         let { favoritos, historico, cursosOferecidos } = doc.data();
-        console.log(favoritos, historico);
+        // console.log(favoritos, historico);
 
         if (!favoritos) {
           favoritos = [];
@@ -60,7 +60,7 @@ const user = ({ navigation }) => {
     refCursos.onSnapshot(querySnapshot => {
       const listFav = [];
       const listHist = [];
-      console.log({ favs });
+      // console.log({ favs });
 
       querySnapshot.forEach(doc => {
         const {
@@ -74,7 +74,7 @@ const user = ({ navigation }) => {
         } = doc.data();
         favs.forEach(f => console.log(f));
         if (favs.some(favoritos => favoritos.id == id)) {
-          console.log("Tem historico");
+          // console.log("Tem historico");
 
           listFav.push({
             id: doc.id,
@@ -252,7 +252,7 @@ const user = ({ navigation }) => {
   return (
     <Container>
       <Tabs initialPage={0}>
-        <Tab heading="Informações Pessoais">
+        <Tab heading="Perfil">
           <View style={styles.container}>
             <Text h1 style={styles.headerText}>
               Informações do usuario
@@ -303,23 +303,23 @@ const user = ({ navigation }) => {
             />
           </View>
         </Tab>
-        <Tabs heading="Historico de Cursos">
+        <Tabs heading="Histórico">
           <Tab heading="Online">
             <Cursos
               navigation={navigation}
-              userCursos={cursosHist}
+              userCursos={historico}
               isCriador={false}
             />
           </Tab>
           <Tab heading="Presenciais">
             <CursosPresenciais
               navigation={navigation}
-              userCursos={cursosHist}
+              userCursos={historico}
               isCriador={false}
             />
           </Tab>
         </Tabs>
-        <Tabs heading="Cursos Favoritos">
+        <Tabs heading="Favoritos">
           <Tab heading="Online">
             <Cursos
               navigation={navigation}
