@@ -96,6 +96,7 @@ Descrição: O Software deverá possibilitar que pessoas, anunciem e procurem cu
 - Não é feita a verificação de email antes de o usuário utilizar o aplicativo
 - Login pelo facebook não foi implementado
 - Não foram implementados testes automatizados
+- Base de dados está sem regras para modificação e acesso
 
 **Explicação**
 
