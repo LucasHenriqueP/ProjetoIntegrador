@@ -361,7 +361,7 @@ const user = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f6b93b"
+    backgroundColor: "#f1f1f1"
   },
   containerBotao: {
     flex: 1,

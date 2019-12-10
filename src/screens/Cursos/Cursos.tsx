@@ -46,7 +46,7 @@ const Cursos = ({ navigation, userCursos, isCriador, isInscrito }) => {
   }
 
   function ratingCompleted(rating, id, ratingAtual) {
-    let newRating = (rating+ratingAtual)/2;
+    let newRating = (rating + ratingAtual) / 2;
     Service.modifyRating(id, newRating);
   }
 
@@ -227,11 +227,18 @@ const Cursos = ({ navigation, userCursos, isCriador, isInscrito }) => {
         <Text>
           Preço: <Text style={styles.curso}>{item.preco}</Text>
         </Text>
+        {isInscrito && (
+          <Text style={styles.criadorButtonText}>
+            Toque nas estrelas abaixo para avaliar o curso
+          </Text>
+        )}
         <Rating
           imageSize={20}
-          onFinishRating={(v)=>{ratingCompleted(v,item.id,item.rating)}}
+          onFinishRating={v => {
+            ratingCompleted(v, item.id, item.rating);
+          }}
           startingValue={parseFloat(item.rating)}
-          readonly = {isInscrito ? false: true}
+          readonly={isInscrito ? false : true}
         />
         <TouchableOpacity
           onPress={() => showCriador(item)}

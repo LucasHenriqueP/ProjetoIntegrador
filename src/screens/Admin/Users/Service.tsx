@@ -13,7 +13,7 @@ export async function logaUsuario() {
 export async function removeUser(item) {
   const { id, nome, email, celular, sobrenome, uid } = item;
   Alert.alert(
-    `Remover User UID: ${uid} ?`,
+    `Deseja desabilitar o usuário?`,
     `ID: ${id}\nNome: ${nome}\nSobrenome: ${sobrenome}\nE-mail: ${email}\nCelular: ${celular}`,
     [
       {
