@@ -84,6 +84,15 @@ export async function modifyCurso(data) {
   );
 }
 
+export async function modifyRating(id,rating) {
+  await ref.doc(id).set(
+    {
+      rating
+    },
+    { merge: true }
+  );
+}
+
 export async function pegaCriador(criador) {
   var usuario: {};
   await firestore()

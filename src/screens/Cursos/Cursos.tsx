@@ -20,7 +20,7 @@ import _ from "lodash";
 
 const ref = Service.getRef();
 
-const Cursos = ({ navigation, userCursos, isCriador }) => {
+const Cursos = ({ navigation, userCursos, isCriador, isInscrito }) => {
   const [Preco, setPreco] = useState("R$0,00");
   const [loading, setLoading] = useState(false); // Set loading to true on component mount
   const [Cursos, setCursos] = useState([]); // Initial empty array of Cursos
@@ -43,6 +43,11 @@ const Cursos = ({ navigation, userCursos, isCriador }) => {
     let arr = await Service.favoritaCurso(id, favs);
     setFavs(arr);
     setModalLoading(false);
+  }
+
+  function ratingCompleted(rating, id, ratingAtual) {
+    let newRating = (rating+ratingAtual)/2;
+    Service.modifyRating(id, newRating);
   }
 
   async function unfavoritaCurso(id) {
@@ -224,8 +229,9 @@ const Cursos = ({ navigation, userCursos, isCriador }) => {
         </Text>
         <Rating
           imageSize={20}
-          readonly
+          onFinishRating={(v)=>{ratingCompleted(v,item.id,item.rating)}}
           startingValue={parseFloat(item.rating)}
+          readonly = {isInscrito ? false: true}
         />
         <TouchableOpacity
           onPress={() => showCriador(item)}

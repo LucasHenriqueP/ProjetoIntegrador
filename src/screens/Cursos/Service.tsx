@@ -71,6 +71,16 @@ export async function unfavoritaCurso(id, favs) {
   return arr;
 }
 
+export async function modifyRating(id,rating) {
+  await ref.doc(id).set(
+    {
+      rating
+    },
+    { merge: true }
+  );
+}
+
+
 export async function modifyCurso(data) {
   const { ID, Curso, Desc, Preco } = data;
   await ref.doc(ID).set(

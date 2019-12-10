@@ -309,6 +309,7 @@ const user = ({ navigation }) => {
               navigation={navigation}
               userCursos={historico}
               isCriador={false}
+              isInscrito = {true}
             />
           </Tab>
           <Tab heading="Presenciais">
@@ -316,6 +317,7 @@ const user = ({ navigation }) => {
               navigation={navigation}
               userCursos={historico}
               isCriador={false}
+              isInscrito = {true}
             />
           </Tab>
         </Tabs>

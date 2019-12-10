@@ -21,7 +21,7 @@ import _ from "lodash";
 
 const ref = Service.getRef();
 
-const CursosP = ({ navigation, userCursos, isCriador }) => {
+const CursosP = ({ navigation, userCursos, isCriador, isInscrito}) => {
   //essa porra ta muito feia, certeza que to fazendo algo de errado
   const [Preco, setPreco] = useState("R$0,00");
   const [loading, setLoading] = useState(false); // Set loading to true on component mount
@@ -54,6 +54,10 @@ const CursosP = ({ navigation, userCursos, isCriador }) => {
     setModalLoading(false);
   }
 
+  function ratingCompleted(rating, id, ratingAtual) {
+    let newRating = (rating+ratingAtual)/2;
+    Service.modifyRating(id, newRating);
+  }
   async function mandaEmail(id, curso) {
     let usuarios = [];
     await firestore()
@@ -230,9 +234,11 @@ const CursosP = ({ navigation, userCursos, isCriador }) => {
         </Text>
         <Rating
           imageSize={20}
-          readonly
+          onFinishRating={(v)=>{ratingCompleted(v,item.id,item.rating)}}
           startingValue={parseFloat(item.rating)}
+          readonly = {isInscrito ? false: true}
         />
+
         <TouchableOpacity
           onPress={() => showCriador(item)}
           style={styles.criadorButton}
