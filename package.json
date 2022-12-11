@@ -28,7 +28,7 @@
     "@react-native-firebase/auth": "^6.0.3",
     "@react-native-firebase/firestore": "^6.0.3",
     "core-js": "^3.3.6",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "lodash": "^4.17.15",
     "native-base": "^2.13.8",
     "prop-types": "^15.7.2",
